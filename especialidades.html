@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Seja um Profissional</title>
+  <link rel="stylesheet" href="css/style-especialidades.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Escolha os serviços que você realiza</h2>
+    <form id="especialidadesForm">
+      <div class="categoria">
+        <h3>Aparelhos Eletrônicos</h3>
+        <label><input type="checkbox" value="Aparelho de Som"> Aparelho de Som</label>
+        <label><input type="checkbox" value="Ar Condicionado"> Ar Condicionado</label>
+        <label><input type="checkbox" value="Televisão"> Televisão</label>
+        <label><input type="checkbox" value="Video Game"> Video Game</label>
+      </div>
+
+      <div class="categoria">
+        <h3>Eletrodomésticos</h3>
+        <label><input type="checkbox" value="Geladeira"> Geladeira</label>
+        <label><input type="checkbox" value="Máquina de Lavar"> Máquina de Lavar</label>
+        <label><input type="checkbox" value="Microondas"> Microondas</label>
+      </div>
+
+      <div class="categoria">
+        <h3>Informática</h3>
+        <label><input type="checkbox" value="Notebook"> Notebook</label>
+        <label><input type="checkbox" value="Celular"> Celular</label>
+      </div>
+
+      <button type="submit">Salvar e Ir para os Pedidos</button>
+      <p id="mensagem"></p>
+    </form>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/especialidades.js"></script>
+</body>
+</html>

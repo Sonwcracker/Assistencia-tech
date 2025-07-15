@@ -1,37 +1,28 @@
-/* css/style-dashboard.css */
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f8f9fa;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-.dashboard {
+.container {
+  max-width: 500px;
+  margin: 80px auto;
+  padding: 20px;
   background: white;
-  padding: 50px;
-  border-radius: 14px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
   text-align: center;
-}
-
-.dashboard h2 {
-  color: #333;
-  margin-bottom: 30px;
 }
 
 button {
   padding: 12px 20px;
-  background-color: #dc3545;
+  margin: 10px;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 8px;
-  font-weight: bold;
+  font-size: 16px;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #c82333;
+  background-color: #0056b3;
+}
+
+a {
+  text-decoration: none;
 }
