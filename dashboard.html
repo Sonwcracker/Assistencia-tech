@@ -13,6 +13,11 @@
       <button>Ver meus serviços/solicitações</button>
     </a>
 
+    <!-- Botão para clientes criarem uma nova solicitação -->
+    <a href="nova-solicitacao.html">
+      <button id="btnNovaSolicitacao" style="display: none;">Nova Solicitação</button>
+    </a>
+
     <!-- Botão visível só para técnicos -->
     <a href="pedidos.html">
       <button id="btnPedidos" style="display: none;">Ver Pedidos</button>
@@ -40,8 +45,13 @@
 
         try {
           const doc = await db.collection("usuarios").doc(user.uid).get();
-          if (doc.exists && doc.data().tipo === "tecnico") {
-            document.getElementById("btnPedidos").style.display = "inline-block";
+          if (doc.exists) {
+            const tipo = doc.data().tipo;
+            if (tipo === "tecnico") {
+              document.getElementById("btnPedidos").style.display = "inline-block";
+            } else {
+              document.getElementById("btnNovaSolicitacao").style.display = "inline-block";
+            }
           }
         } catch (error) {
           console.error("Erro ao verificar tipo de usuário:", error);
