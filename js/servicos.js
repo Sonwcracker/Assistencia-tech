@@ -16,59 +16,91 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    // Busca o tipo de usuário
     const doc = await db.collection('usuarios').doc(user.uid).get();
     const dados = doc.data();
 
-    console.log("UID logado:", user.uid);
-    console.log("Tipo de usuário:", dados.tipo);
-
     if (dados.tipo === 'tecnico') {
+      // Parte do técnico
       titulo.textContent = "Meus Serviços";
+
       const querySnapshot = await db.collection('servicos')
         .where('tecnico_id', '==', user.uid)
+        .orderBy('categoria')
         .get();
-
-      console.log("Serviços encontrados:", querySnapshot.size);
 
       if (querySnapshot.empty) {
         mensagem.textContent = "Você ainda não cadastrou nenhum serviço.";
       } else {
         querySnapshot.forEach(doc => {
           const servico = doc.data();
-          console.log("Serviço:", servico);
 
           lista.innerHTML += `
-            <div class="card">
-              <h3>${servico.categoria}</h3>
-              <p>${servico.descricao}</p>
-              <p><strong>Preço médio:</strong> R$ ${servico.preco_medio}</p>
+            <div class="pedido-card">
+              <p class="data-pedido">Categoria: ${servico.categoria}</p>
+              <div class="card-conteudo">
+                <div class="info-pedido">
+                  <p class="categoria">Descrição</p>
+                  <h3 class="marca">${servico.descricao}</h3>
+                  <p class="status"><span class="icone-status">💰</span> Preço médio: R$ ${servico.preco_medio}</p>
+                </div>
+                <div class="seta">›</div>
+              </div>
             </div>
           `;
         });
       }
 
     } else {
-      titulo.textContent = "Minhas Solicitações";
+      // Parte do cliente
+      titulo.textContent = "Meus Pedidos";
+
       const querySnapshot = await db.collection('solicitacoes')
         .where('cliente_id', '==', user.uid)
+        .orderBy('data_criacao', 'desc')
         .get();
-
-      console.log("Solicitações encontradas:", querySnapshot.size);
 
       if (querySnapshot.empty) {
         mensagem.textContent = "Você ainda não fez nenhuma solicitação.";
       } else {
         querySnapshot.forEach(doc => {
           const solic = doc.data();
-          console.log("Solicitação:", solic);
+          const solicId = doc.id;
+
+          const data = solic.data_criacao?.toDate?.().toLocaleDateString('pt-BR', {
+            day: 'numeric', month: 'long', year: 'numeric'
+          }) || 'Data não disponível';
+
+          const status = solic.status || "aberta";
+
+          const bolinhaStatus = status === "em_andamento"
+        ? `<div class="notificacao"></div>`
+        : '';
+
+          const textoStatus = status === "em_andamento"
+            ? `<strong class="status-andamento">Em andamento</strong>`
+            : 'Aguardando, estamos buscando profissionais';
+
+          const profissionais = solic.profissionais_encontrados || 0;
+          const imagemProf = profissionais > 0
+            ? `<img src="img/profissional-exemplo.png" class="img-prof">`
+            : '';
 
           lista.innerHTML += `
-            <div class="card">
-              <h3>${solic.categoria}</h3>
-              <p>${solic.descricao}</p>
-              <p><strong>Status:</strong> ${solic.status}</p>
-            </div>
+            <a href="pedido-detalhes.html?id=${solicId}" class="link-card">
+              <div class="pedido-card">
+                ${bolinhaStatus}
+                <p class="data-pedido">${data}</p>
+                <div class="card-conteudo">
+                  <div class="info-pedido">
+                    <p class="categoria">Assistência Técnica</p>
+                    <h3 class="marca">${solic.categoria} - ${solic.marca_aparelho}</h3>
+                    <p class="encontrado">${textoStatus}</p>
+                    ${imagemProf}
+                  </div>
+                  <div class="seta">›</div>
+                </div>
+              </div>
+            </a>
           `;
         });
       }

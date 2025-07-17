@@ -22,7 +22,6 @@ window.addEventListener('DOMContentLoaded', () => {
       const cred = await auth.createUserWithEmailAndPassword(email, senha);
       const uid = cred.user.uid;
 
-      // Inicia os dados sem lat/lng
       const userData = {
         nome,
         email,
@@ -32,31 +31,30 @@ window.addEventListener('DOMContentLoaded', () => {
         cep
       };
 
-      // Tenta obter geolocalização
+      // Tenta obter localização
+      const salvarDadosUsuario = async (dados) => {
+        await db.collection('usuarios').doc(uid).set(dados);
+        mensagem.textContent = "Usuário cadastrado com sucesso!";
+
+        // ✅ Redirecionamento com base no tipo
+        if (tipo === 'tecnico') {
+          window.location.href = 'especialidades.html';
+        } else {
+          window.location.href = 'servicos.html'; // ou outra página cliente
+        }
+      };
+
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-
-          // Adiciona localização aos dados do usuário
-          userData.lat = lat;
-          userData.lng = lng;
-
-          await db.collection('usuarios').doc(uid).set(userData);
-          mensagem.textContent = "Usuário cadastrado com sucesso com localização!";
-          formCadastro.reset();
-
+          userData.lat = position.coords.latitude;
+          userData.lng = position.coords.longitude;
+          await salvarDadosUsuario(userData);
         }, async (error) => {
-          console.warn("⚠️ Geolocalização negada ou falhou:", error.message);
-
-          // Salva sem lat/lng se localização não for obtida
-          await db.collection('usuarios').doc(uid).set(userData);
-          mensagem.textContent = "Usuário cadastrado, mas sem localização.";
+          console.warn("⚠️ Geolocalização falhou:", error.message);
+          await salvarDadosUsuario(userData);
         });
       } else {
-        // Se o navegador não suportar
-        await db.collection('usuarios').doc(uid).set(userData);
-        mensagem.textContent = "Usuário cadastrado, mas sem suporte a localização.";
+        await salvarDadosUsuario(userData);
       }
 
     } catch (error) {
