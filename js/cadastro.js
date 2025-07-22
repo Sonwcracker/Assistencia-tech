@@ -17,6 +17,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const cidade = document.getElementById('cidade').value;
     const estado = document.getElementById('estado').value;
     const cep = document.getElementById('cep').value;
+    const profissao = document.getElementById('profissao')?.value;
 
     try {
       const cred = await auth.createUserWithEmailAndPassword(email, senha);
@@ -31,19 +32,24 @@ window.addEventListener('DOMContentLoaded', () => {
         cep
       };
 
-      // Tenta obter localização
+      // Adiciona a profissão se for técnico
+      if (tipo === 'tecnico' && profissao) {
+        userData.profissao = profissao;
+      }
+
       const salvarDadosUsuario = async (dados) => {
         await db.collection('usuarios').doc(uid).set(dados);
         mensagem.textContent = "Usuário cadastrado com sucesso!";
 
-        // ✅ Redirecionamento com base no tipo
+        // Redireciona com base no tipo
         if (tipo === 'tecnico') {
-          window.location.href = 'especialidades.html';
+          window.location.href = 'dashboard.html'; // ou página do técnico
         } else {
-          window.location.href = 'servicos.html'; // ou outra página cliente
+          window.location.href = 'servicos.html'; // ou página do cliente
         }
       };
 
+      // Geolocalização
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           userData.lat = position.coords.latitude;

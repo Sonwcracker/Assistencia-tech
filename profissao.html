@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Serviço</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/navbar.css">
+  <link rel="stylesheet" href="css/profissao.css">
+  <link rel="stylesheet" href="css/footer.css">
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+</head>
+<body id="top">
+
+  <header class="header" data-header id="navbar-placeholder"></header>
+
+  <main>
+    <section class="cabecalho-flex">
+      <div class="imagem-wrapper">
+        <img id="imagem-profissao" src="" alt="Imagem da profissão">
+      </div>
+      <div class="texto-wrapper">
+        <h1 id="titulo-profissao">Profissão</h1>
+        <p id="descricao-profissao">Descrição da profissão</p>
+        <div class="botoes-profissao">
+          <button class="btn-learn">Saiba mais</button>
+          <button class="btn-servicos" onclick="document.getElementById('lista-profissionais').scrollIntoView({ behavior: 'smooth' })">Ver profissionais</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="conteudo-profissao">
+      <h2>Sobre a profissão</h2>
+      <p id="texto-profissao"></p>
+    </section>
+
+    <button class="btn-orcamento" onclick="abrirFormOrcamento()">Fazer orçamento</button>
+
+    <!-- Formulário de Orçamento -->
+    <div id="form-orcamento" class="form-orcamento" style="display: none;">
+      <h3>Solicitar Orçamento</h3>
+      <form id="formSolicitacaoProfissao">
+        <textarea id="descricao" placeholder="Descreva seu problema" required></textarea><br>
+        <label for="data_prevista">Quando precisa do serviço?</label>
+        <select id="data_prevista" required>
+          <option value="">Selecione</option>
+          <option value="PRIORIDADE TOTAL">PRIORIDADE TOTAL</option>
+          <option value="Próximos 7 dias">Nos próximos 7 dias</option>
+          <option value="Próximos 15 dias">Nos próximos 15 dias</option>
+          <option value="Sem data definida">Não tenho data definida</option>
+        </select><br>
+        <input type="text" id="nome" placeholder="Seu nome" required><br>
+        <input type="email" id="email" placeholder="E-mail" required><br>
+        <input type="text" id="cep" placeholder="CEP" required><br>
+        <button type="submit">Enviar</button>
+        <p id="mensagem-form"></p>
+      </form>
+    </div>
+
+    <section class="profissionais">
+      <h2>Profissionais disponíveis</h2>
+      <ul id="lista-profissionais" class="lista-profissionais"></ul>
+    </section>
+
+    <a href="#top" class="go-top" data-go-top><ion-icon name="chevron-up-outline"></ion-icon></a>
+  </main>
+
+  <!-- Footer FORA do <main> -->
+  <div id="footer-container"></div>
+
+  <!-- ÍCONES -->
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  <!-- SCRIPTS -->
+  <script src="js/navbar.js"></script>
+  <script src="js/footer.js"></script>
+  <script src="js/profissao.js" defer></script>
+</body>
+</html>

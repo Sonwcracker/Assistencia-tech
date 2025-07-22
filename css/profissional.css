@@ -1,0 +1,156 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* Estilo geral */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #fff;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+main {
+  flex: 1;
+}
+
+/* PERFIL */
+.perfil-container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 30px 20px 40px; /* Aproxima do topo */
+}
+
+.perfil-container h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.perfil-container p.subtitulo {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 40px;
+}
+
+.perfil-conteudo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 30px;
+  align-items: center;
+}
+
+.perfil-box {
+  flex: 1;
+  min-width: 250px;
+}
+
+.perfil-box h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.perfil-box p {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.perfil-box.detalhes {
+  text-align: center; /* Centraliza botão e texto */
+}
+
+.perfil-foto {
+  width: 220px;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 20px auto;
+}
+
+.btn-contato {
+  margin-top: 20px;
+  background-color: #316BFF;  
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.btn-contato:hover {
+  background-color: #244fc3;
+}
+
+.redes-sociais {
+  margin-top: 15px;
+}
+
+.redes-sociais ion-icon {
+  font-size: 20px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+/* CARD DE LOGIN RÁPIDO */
+.box-login-rapido {
+  margin-top: 40px;
+  padding: 25px;
+  background-color: #f5f5f5;
+  border-radius: 12px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  text-align: left;
+}
+
+.box-login-rapido h3 {
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 20px;
+}
+
+.box-login-rapido input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.btn-login-acesso {
+  background-color: #316BFF;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  font-size: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-login-acesso:hover {
+  background-color: #244fc3;
+}
+
+.avaliar-container {
+  margin-top: 50px;
+  text-align: center;
+}
+
+.avaliar-container p {
+  font-size: 16px;
+  margin-bottom: 12px;
+}

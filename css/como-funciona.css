@@ -1,0 +1,279 @@
+:root {
+  --cliente-cor: #3b79c9;
+  --especialista-cor: #f16e6e;
+  --text-color: #363F4E;
+  --background-color: #FFFFFF;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  padding: 0;
+}
+
+.perfil-container {
+  background: var(--cliente-cor);
+  padding-top: 2rem;
+  position: relative;
+  text-align: center;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.perfil-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px 8px 0 0;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.95rem;
+}
+
+.tab.active {
+  box-shadow: inset 0 -4px 0 0 rgba(255, 255, 255, 0.5);
+}
+
+.cliente {
+  background-color: var(--cliente-cor);
+  color: #fff;
+}
+
+.especialista {
+  background-color: var(--especialista-cor);
+  color: #fff;
+}
+
+.indicador {
+  background-color: var(--cliente-cor);
+  padding: 1rem;
+  font-weight: bold;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.indicador::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px;
+  border-style: solid;
+  border-color: var(--cliente-cor) transparent transparent transparent;
+}
+
+.secao-destaque {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 40px 20px 100px 20px;
+  flex-wrap: wrap;
+}
+
+.destaque-esquerda,
+.destaque-direita {
+  flex: 1 1 320px;
+  max-width: 500px;
+}
+
+.destaque-esquerda h1 {
+  font-size: 2rem;
+  color: #1c1c1c;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.destaque-esquerda span {
+  color: #223544;
+}
+
+.destaque-esquerda p {
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.imagem-rodape img,
+.imagem-topo img {
+  width: 100%;
+  max-width: 380px;
+  border-radius: 40% 60% 55% 45% / 60% 40% 60% 40%;
+  margin-top: 10px;
+}
+
+.texto-descricao h2 {
+  color: #223544;
+  margin-bottom: 6px;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.texto-descricao p {
+  font-size: 0.95rem;
+  color: #222;
+  line-height: 1.5;
+  margin-top: 16px;
+}
+
+.linha-do-tempo {
+  background-color: #fef4f6;
+  padding: 60px 20px;
+}
+
+.linha-do-tempo h1 {
+  font-size: 1.75rem;
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.etapas-container {
+  position: relative;
+  max-width: 1000px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.linha-central {
+  position: absolute;
+  left: 60px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--cliente-cor);
+  z-index: 1;
+  transition: background-color 0.3s ease;
+}
+
+.etapa {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  z-index: 2;
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  margin-left: 80px;
+}
+
+.etapa .numero {
+  font-size: 1.2rem;
+  color: var(--cliente-cor);
+  font-weight: bold;
+  width: 36px;
+  text-align: center;
+}
+
+.etapa .icone {
+  width: 42px;
+  height: 42px;
+  background-color: #5e8ecc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.etapa .icone img {
+  width: 22px;
+  height: 22px;
+}
+
+.etapa .conteudo h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: var(--cliente-cor);
+  transition: color 0.3s ease;
+}
+
+.etapa .conteudo p {
+  font-size: 0.9rem;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .etapa {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 30px;
+  }
+
+  .linha-central {
+    left: 20px;
+  }
+}
+
+.diferenciais {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #fff;
+  color: #2E0D45;
+}
+
+.diferenciais .subtitulo {
+  color: var(--cliente-cor);
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.diferenciais h2 {
+  font-size: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.cards-diferenciais {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.card {
+  width: 240px;
+  padding: 1.5rem 1.25rem;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  text-align: left;
+}
+
+.card img {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 1rem;
+}
+
+.card h3 {
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+  color: #2E0D45;
+}
+
+.card p {
+  font-size: 0.9rem;
+  color: #444;
+  line-height: 1.5;
+}
+
+.hidden {
+  display: none !important;
+}

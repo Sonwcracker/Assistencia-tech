@@ -22,22 +22,23 @@ window.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    const especialidades = tecnicoData.especialidades || [];
+    const profissao = tecnicoData.profissao;
     const tecnicoLat = tecnicoData.lat;
     const tecnicoLng = tecnicoData.lng;
 
-    if (especialidades.length === 0) {
-      mensagem.textContent = "Você ainda não selecionou suas especialidades.";
+    if (!profissao) {
+      mensagem.textContent = "Você ainda não definiu sua profissão.";
       return;
     }
 
-    // Buscar solicitações compatíveis
+    // Buscar solicitações compatíveis com a profissão
     const querySnapshot = await db.collection('solicitacoes')
-      .where('categoria', 'in', especialidades)
+      .where('profissao_solicitada', '==', profissao)
+      .where('status', '==', 'aberta') // Apenas solicitações abertas
       .get();
 
     if (querySnapshot.empty) {
-      mensagem.textContent = "Nenhum pedido encontrado com suas especialidades.";
+      mensagem.textContent = "Nenhum pedido encontrado para sua profissão.";
     } else {
       for (const doc of querySnapshot.docs) {
         const pedido = doc.data();
@@ -60,10 +61,10 @@ window.addEventListener('DOMContentLoaded', async () => {
           console.error("Erro ao buscar cliente:", e);
         }
 
-        // Card sem data desejada
+        // Card exibindo os dados
         pedidosContainer.innerHTML += `
           <div class="card" onclick="window.location.href='detalhe-pedido-cliente.html?id=${doc.id}'">
-            <h3>${pedido.categoria}</h3>
+            <h3>${pedido.profissao_solicitada}</h3>
             <p><strong>Descrição:</strong> ${pedido.descricao}</p>
             <p><strong>Cliente:</strong> ${nomeCliente}</p>
             <p><strong>Distância:</strong> ${distancia}</p>
@@ -96,4 +97,3 @@ function logout() {
     window.location.href = "login.html";
   });
 }
-  

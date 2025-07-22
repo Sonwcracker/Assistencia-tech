@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     const dados = doc.data();
 
     if (dados.tipo === 'tecnico') {
-      // Parte do técnico
+      // === Parte do Técnico ===
       titulo.textContent = "Meus Serviços";
 
       const querySnapshot = await db.collection('servicos')
@@ -51,7 +51,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       }
 
     } else {
-      // Parte do cliente
+      // === Parte do Cliente ===
       titulo.textContent = "Meus Pedidos";
 
       const querySnapshot = await db.collection('solicitacoes')
@@ -73,8 +73,8 @@ window.addEventListener('DOMContentLoaded', async () => {
           const status = solic.status || "aberta";
 
           const bolinhaStatus = status === "em_andamento"
-        ? `<div class="notificacao"></div>`
-        : '';
+            ? `<div class="notificacao"></div>`
+            : '';
 
           const textoStatus = status === "em_andamento"
             ? `<strong class="status-andamento">Em andamento</strong>`
@@ -92,8 +92,8 @@ window.addEventListener('DOMContentLoaded', async () => {
                 <p class="data-pedido">${data}</p>
                 <div class="card-conteudo">
                   <div class="info-pedido">
-                    <p class="categoria">Assistência Técnica</p>
-                    <h3 class="marca">${solic.categoria} - ${solic.marca_aparelho}</h3>
+                    <p class="categoria">Área Solicitada</p>
+                    <h3 class="marca">${solic.profissao_solicitada || "Não informada"}</h3>
                     <p class="encontrado">${textoStatus}</p>
                     ${imagemProf}
                   </div>

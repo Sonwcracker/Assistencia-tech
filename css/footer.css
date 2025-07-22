@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@400;500;600&display=swap');
+
+:root {
+  --united-nations-blue: hsl(214, 56%, 58%);
+  --bright-navy-blue: hsl(214, 57%, 51%);
+  --spanish-gray: hsl(0, 0%, 60%);
+  --black-coral: hsl(225, 8%, 42%);
+  --oxford-blue: hsl(208, 97%, 12%);
+  --yale-blue: hsl(214, 72%, 33%);
+  --blue-ncs: hsl(197, 100%, 36%);
+  --gunmetal: hsl(206, 34%, 20%);
+  --gainsboro: hsl(0, 0%, 88%);
+  --cultured: hsl(0, 0%, 98%);
+  --white: hsl(0, 0%, 100%);
+  --black: hsl(0, 0%, 0%);
+  --onyx: hsl(0, 0%, 25%);
+  --jet: hsl(0, 0%, 20%);
+
+  --ff-poppins: "Poppins", sans-serif;
+  --ff-montserrat: "Montserrat", sans-serif;
+
+  --fs-1: calc(20px + 3.5vw);
+  --fs-2: calc(18px + 1.6vw);
+  --fs-3: calc(16px + 0.45vw);
+  --fs-4: 15px;
+  --fs-5: 14px;
+  --fs-6: 13px;
+  --fs-7: 12px;
+  --fs-8: 11px;
+
+  --fw-500: 500;
+  --fw-600: 600;
+  --fw-700: 700;
+
+  --transition: 0.25s ease-in-out;
+
+  --section-padding: 60px;
+
+  --radius-15: 15px;
+  --radius-25: 25px;
+}
+
+
+.footer {
+  text-align: left; /* força o alinhamento natural */
+}
+
+
+body {
+  overflow-x: hidden; /* evita scroll lateral */
+}
+
+/* ===== RODAPÉ PRINCIPAL ===== */
+.footer {
+  background-color: #1f3242;
+  color: #dcdcdc;
+  padding: 40px 20px 20px;
+  font-family: var(--ff-poppins);
+  font-size: 14px;
+  font-weight: var(--fw-500);
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Colunas */
+.footer-left,
+.footer-contact,
+.footer-email {
+  flex: 1;
+  min-width: 260px;
+}
+
+/* Coluna Esquerda */
+.footer-left p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #dcdcdc;
+  font-weight: var(--fw-500);
+}
+
+/* Contato */
+.footer-contact h3 {
+  margin-bottom: 8px;
+  font-weight: var(--fw-600);
+  font-size: 15px;
+  color: #ffffff;
+  border-bottom: 2px solid #316bff;
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+.footer-contact p,
+.footer-contact li {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #dcdcdc;
+  font-weight: var(--fw-500);
+}
+
+.footer-contact ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.footer-contact li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.footer-contact i {
+  color: #316bff;
+}
+
+/* Formulário de Email */
+.footer-email label {
+  display: block;
+  font-size: 14px;
+  color: #ffffff;
+  margin-bottom: 8px;
+  font-weight: var(--fw-500);
+}
+
+.email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 320px;
+}
+
+.email-form input[type="email"] {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 30px;
+  font-size: 14px;
+  background-color: #fff;
+  color: #000;
+  width: 100%;
+  font-weight: var(--fw-500);
+}
+
+.email-form button {
+  padding: 10px;
+  border: 1px solid #fff;
+  background-color: transparent;
+  border-radius: 30px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: var(--fw-600);
+}
+
+.email-form button:hover {
+  background-color: #316bff;
+  border-color: #316bff;
+}
+
+/* Rodapé Inferior */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 40px auto 0;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  color: #dcdcdc;
+  font-weight: var(--fw-500);
+}
+
+.footer-bottom .footer-links {
+  display: flex;
+  gap: 14px;
+}
+
+.footer-bottom .footer-links a {
+  color: #dcdcdc;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: var(--fw-500);
+}
+
+.footer-bottom .footer-links a:hover {
+  text-decoration: underline;
+}

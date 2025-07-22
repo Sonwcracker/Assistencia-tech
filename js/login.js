@@ -17,29 +17,43 @@ window.addEventListener('DOMContentLoaded', () => {
       const cred = await auth.signInWithEmailAndPassword(email, senha);
       const uid = cred.user.uid;
 
-      // Tenta obter geolocalização
+      // Verifica se há uma página para voltar após login
+      const voltarPara = localStorage.getItem("voltarPara");
+
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
 
-          // Atualiza localização no Firestore
-          await db.collection('usuarios').doc(uid).update({
-            lat,
-            lng
-          });
+          await db.collection('usuarios').doc(uid).update({ lat, lng });
 
           mensagem.textContent = "Login realizado com sucesso!";
-          window.location.href = "dashboard.html";
+          if (voltarPara) {
+            localStorage.removeItem("voltarPara");
+            window.location.href = voltarPara;
+          } else {
+            window.location.href = "dashboard.html";
+          }
 
-        }, (error) => {
+        }, async (error) => {
           console.warn("⚠️ Geolocalização negada ou falhou:", error.message);
+
           mensagem.textContent = "Login realizado (sem localização).";
-          window.location.href = "dashboard.html";
+          if (voltarPara) {
+            localStorage.removeItem("voltarPara");
+            window.location.href = voltarPara;
+          } else {
+            window.location.href = "dashboard.html";
+          }
         });
       } else {
-        mensagem.textContent = "Login realizado (navegador sem suporte de localização).";
-        window.location.href = "dashboard.html";
+        mensagem.textContent = "Login realizado (sem suporte de localização).";
+        if (voltarPara) {
+          localStorage.removeItem("voltarPara");
+          window.location.href = voltarPara;
+        } else {
+          window.location.href = "dashboard.html";
+        }
       }
 
     } catch (error) {
