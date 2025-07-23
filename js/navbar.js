@@ -19,13 +19,24 @@ window.addEventListener('DOMContentLoaded', async () => {
       const nome = dados.nome || "Usuário";
       const tipo = dados.tipo;
 
+      let menuHTML = "";
+
+      if (tipo === 'cliente') {
+        menuHTML = `
+          <a href="servicos.html" class="item-menu">Ver meus serviços</a>
+        `;
+      } else if (tipo === 'tecnico' || tipo === 'profissional') {
+        menuHTML = `
+          <a href="orcamentos.html" class="item-menu">Orçamentos</a>
+          <a href="pedidos.html" class="item-menu">Pedidos </a>
+        `;
+      }
+
       userDiv.innerHTML = `
         <div class="user-dropdown">
-          <button class="user-button-nome">${nome}</button>
+          <button class="user-button-nome"><strong style="color: white;">${nome}</strong></button>
           <div class="user-menu">
-            ${tipo === 'cliente' 
-              ? `<a href="servicos.html" class="item-menu">Ver meus serviços</a>`
-              : `<a href="meus-pedidos.html" class="item-menu">Meus Pedidos</a>`}
+            ${menuHTML}
             <a href="#" class="item-menu sair" onclick="logout()">
               <i class="ri-logout-box-line"></i> Sair
             </a>

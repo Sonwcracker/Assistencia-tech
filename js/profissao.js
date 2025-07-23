@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const db = firebase.firestore();
+  const auth = firebase.auth();
 
   const imagensProfissao = {
     eletricista: "https://institutodaconstrucao.com.br/wp-content/uploads/2019/09/Quais-sao-as-principais-funcoes-do-eletricista-Instituto-da-Construcao.jpg",
     encanador: "https://soscasacuritiba.com.br/wp-content/uploads/2023/09/Encanador.jpg",
-    // Adicione mais profissões aqui conforme necessário
+    // Adicione mais se quiser
   };
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -16,8 +17,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
+    // Carregar dados da profissão
     const doc = await db.collection("profissoes").doc(profissaoId).get();
-
     if (!doc.exists) {
       document.getElementById("titulo-profissao").textContent = "Profissão não encontrada";
       return;
@@ -29,66 +30,114 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("texto-profissao").textContent = data.texto || "Informações completas serão exibidas aqui.";
     document.getElementById("imagem-profissao").src = imagensProfissao[profissaoId] || "https://via.placeholder.com/600";
 
-    const profissionaisSnapshot = await db
+    const lista = document.getElementById("lista-profissionais");
+    lista.innerHTML = "";
+
+    // Buscar profissionais da subcoleção
+    const profissionaisSub = await db
       .collection("profissoes")
       .doc(profissaoId)
       .collection("profissionais")
       .get();
 
-    const lista = document.getElementById("lista-profissionais");
-    lista.innerHTML = "";
-
-    if (profissionaisSnapshot.empty) {
-      lista.innerHTML = "<p>Nenhum profissional cadastrado ainda.</p>";
-      return;
-    }
-
-    profissionaisSnapshot.forEach(doc => {
+    profissionaisSub.forEach(doc => {
       const prof = doc.data();
       const profId = doc.id;
-
-      const link = document.createElement("a");
-      link.href = `profissional.html?profissao=${profissaoId}&id=${profId}`;
-      link.className = "link-card";
-
-      const card = document.createElement("li");
-      card.className = "card-profissional";
-
-      link.innerHTML = `
-        <div>
-          <h3>${prof.nome}</h3>
-          <p>${prof.descricao || "Sem descrição"}</p>
-          <p><strong>Nota:</strong> ${prof.avaliacao || "N/A"}</p>
-          <p><strong>Preço:</strong> R$ ${prof.preco || "A combinar"}</p>
-        </div>
-      `;
-
-      card.appendChild(link);
+      const card = criarCardProfissional(prof, profissaoId, profId);
       lista.appendChild(card);
     });
+
+    // Buscar profissionais da coleção usuarios
+    const profissionaisUsuarios = await db
+      .collection("usuarios")
+      .where("tipo", "==", "tecnico")
+      .where("profissao", "==", profissaoId)
+      .get();
+
+    profissionaisUsuarios.forEach(doc => {
+      const prof = doc.data();
+      const profId = doc.id;
+      const card = criarCardProfissional(prof, profissaoId, profId);
+      lista.appendChild(card);
+    });
+
+    if (lista.children.length === 0) {
+      lista.innerHTML = "<p>Nenhum profissional cadastrado ainda.</p>";
+    }
+
   } catch (e) {
     console.error("Erro ao carregar profissão:", e);
   }
 });
 
-// ===== Modal de Login/Cadastro =====
-function abrirModalLogin() {
-  document.getElementById("modal-login").style.display = "block";
+// Cria um card para o profissional com avaliação
+function criarCardProfissional(prof, profissaoId, profId) {
+  const link = document.createElement("a");
+  link.href = `profissional.html?profissao=${profissaoId}&id=${profId}`;
+  link.className = "link-card";
+
+  const card = document.createElement("li");
+  card.className = "card-profissional";
+
+  const conteudo = document.createElement("div");
+  conteudo.innerHTML = `
+    <h3>${prof.nome}</h3>
+    <p>${prof.descricao || "Sem descrição"}</p>
+    <p><strong>Preço:</strong> R$ ${prof.preco || "A combinar"}</p>
+    <div class="avaliacoes-prof-card" id="avaliacoes-${profId}"><em>Carregando avaliações...</em></div>
+  `;
+
+  link.appendChild(conteudo);
+  card.appendChild(link);
+
+  // Buscar avaliações
+  firebase.firestore()
+    .collection("usuarios")
+    .doc(profId)
+    .collection("avaliacoes")
+    .orderBy("data", "desc")
+    .get()
+    .then(async (snapshot) => {
+      const avalDiv = document.getElementById(`avaliacoes-${profId}`);
+      if (snapshot.empty) {
+        avalDiv.innerHTML = "<p><strong>Nota:</strong> Ainda sem avaliações</p>";
+        return;
+      }
+
+      let somaNotas = 0;
+      let avaliadores = [];
+
+      for (const doc of snapshot.docs) {
+        const data = doc.data();
+        somaNotas += data.nota || 0;
+
+        // Buscar nome de quem avaliou
+        const clienteRef = await firebase.firestore().collection("usuarios").doc(data.usuarioId).get();
+        const nomeCliente = clienteRef.exists ? clienteRef.data().nome : "Anônimo";
+        avaliadores.push(nomeCliente);
+      }
+
+      const media = (somaNotas / snapshot.size).toFixed(1);
+      avalDiv.innerHTML = `
+        <p><strong>Nota:</strong> ${media} ★ (${snapshot.size} avaliações)</p>
+        <p><strong>Avaliado por:</strong> ${avaliadores.join(", ")}</p>
+      `;
+    })
+    .catch(err => {
+      console.error("Erro ao carregar avaliações:", err);
+    });
+
+  return card;
 }
 
-function fecharModal() {
-  document.getElementById("modal-login").style.display = "none";
-}
-
-// ===== Formulário de Orçamento =====
+// Exibir formulário de orçamento
 function abrirFormOrcamento() {
   const user = firebase.auth().currentUser;
   const urlAtual = window.location.href;
 
   if (!user) {
-    // Salva o link atual no localStorage para voltar depois do login
     localStorage.setItem('voltarPara', urlAtual);
-    window.location.href = "login.html"; // ou "login.html?retorno=profissao"
+    window.location.href = "login.html";
     return;
   }
 
@@ -99,21 +148,14 @@ function abrirFormOrcamento() {
   }
 }
 
-
+// Enviar orçamento
 document.getElementById("formSolicitacaoProfissao").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const db = firebase.firestore();
-  const auth = firebase.auth();
-  const user = auth.currentUser;
-
+  const user = firebase.auth().currentUser;
   const urlParams = new URLSearchParams(window.location.search);
   const profissao = urlParams.get("profissao");
-
-  if (!profissao) {
-    alert("Profissão não especificada.");
-    return;
-  }
 
   const novaSolicitacao = {
     profissao_solicitada: profissao,
@@ -136,40 +178,3 @@ document.getElementById("formSolicitacaoProfissao").addEventListener("submit", a
     document.getElementById("mensagem-form").textContent = "Erro ao enviar: " + err.message;
   }
 });
-
-// ===== Login/Cadastro com Firebase Auth =====
-const formLogin = document.getElementById("form-login");
-if (formLogin) {
-  formLogin.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const nome = document.getElementById("nome").value;
-    const telefone = document.getElementById("telefone").value;
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-
-    try {
-      const cred = await firebase.auth().createUserWithEmailAndPassword(email, senha);
-      const uid = cred.user.uid;
-
-      await firebase.firestore().collection("clientes").doc(uid).set({
-        nome, telefone, email, tipo: "cliente"
-      });
-
-      alert("Cadastro realizado com sucesso!");
-      fecharModal();
-    } catch (err) {
-      if (err.code === 'auth/email-already-in-use') {
-        try {
-          await firebase.auth().signInWithEmailAndPassword(email, senha);
-          alert("Login realizado com sucesso!");
-          fecharModal();
-        } catch (e) {
-          document.getElementById("mensagem-login").textContent = "Senha incorreta.";
-        }
-      } else {
-        document.getElementById("mensagem-login").textContent = err.message;
-      }
-    }
-  });
-}

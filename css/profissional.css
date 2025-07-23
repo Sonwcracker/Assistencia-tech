@@ -154,3 +154,50 @@ main {
   font-size: 16px;
   margin-bottom: 12px;
 }
+
+/* AVALIAÇÕES DOS CLIENTES */
+.avaliacoes-clientes {
+  max-width: 800px;
+  margin: 60px auto 40px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  text-align: left;
+}
+
+.avaliacoes-clientes h3 {
+  font-size: 22px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.comentario-box {
+  background-color: #fff;
+  border-left: 4px solid #316BFF;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+}
+
+.comentario-box p {
+  margin: 5px 0;
+  font-size: 15px;
+  color: #444;
+}
+
+.comentario-box small {
+  color: #777;
+  font-size: 13px;
+}
+
+.estrelas-avaliacao {
+  color: #FFD700;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.estrelas-avaliacao span {
+  margin-right: 2px;
+}

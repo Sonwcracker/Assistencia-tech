@@ -40,14 +40,16 @@ window.addEventListener('DOMContentLoaded', async () => {
     const statusEl = document.getElementById("status");
     statusEl.textContent = dados.status === "aberta" ? "Buscando Profissionais" : dados.status;
 
-    // Adiciona seção "Profissionais encontrados" se houver técnico atribuído
+    // Se houver técnico atribuído, mostra a seção de profissional
     if (dados.tecnico_id) {
       const tecnicoRef = await db.collection("usuarios").doc(dados.tecnico_id).get();
+
       if (tecnicoRef.exists) {
         const tecnico = tecnicoRef.data();
 
         const container = document.createElement("div");
         container.style.marginTop = "40px";
+
         container.innerHTML = `
           <h3 style="font-size: 22px; display: flex; align-items: center; gap: 10px;">
             <img src="img/profissional-icon.png" alt="ícone" width="26">
@@ -58,6 +60,20 @@ window.addEventListener('DOMContentLoaded', async () => {
             <p><strong>Especialidade:</strong> ${Array.isArray(tecnico.especialidades) ? tecnico.especialidades.join(", ") : "N/D"}</p>
           </div>
         `;
+
+        // Se o status for "finalizado", exibe botão de avaliação
+        if (dados.status === "finalizado") {
+          const btnAvaliar = document.createElement("button");
+          btnAvaliar.textContent = "Avaliar profissional";
+          btnAvaliar.classList.add("btn-avaliar");
+
+          btnAvaliar.addEventListener("click", () => {
+           const profissionalId = dados.profissional_aceito_id || dados.tecnico_id;
+            window.location.href = `avaliar.html?id=${profissionalId}&pedido=${id}`;
+          });
+
+          container.appendChild(btnAvaliar);
+        }
 
         document.querySelector(".container").appendChild(container);
       }

@@ -17,9 +17,25 @@ window.addEventListener('DOMContentLoaded', () => {
       const cred = await auth.signInWithEmailAndPassword(email, senha);
       const uid = cred.user.uid;
 
+      const doc = await db.collection('usuarios').doc(uid).get();
+
+      if (!doc.exists) {
+        mensagem.textContent = "Usuário não encontrado no banco de dados.";
+        return;
+      }
+
+      const dados = doc.data();
+      const nome = dados.nome || 'Usuário';
+      const tipo = dados.tipo || 'cliente';
+
+      // Salva no localStorage para uso na navbar
+      localStorage.setItem("usuarioNome", nome);
+      localStorage.setItem("usuarioTipo", tipo);
+
       // Verifica se há uma página para voltar após login
       const voltarPara = localStorage.getItem("voltarPara");
 
+      // Geolocalização
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(async (position) => {
           const lat = position.coords.latitude;
@@ -32,7 +48,7 @@ window.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem("voltarPara");
             window.location.href = voltarPara;
           } else {
-            window.location.href = "dashboard.html";
+            window.location.href = "home.html"; // Redireciona para a home
           }
 
         }, async (error) => {
@@ -43,7 +59,7 @@ window.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem("voltarPara");
             window.location.href = voltarPara;
           } else {
-            window.location.href = "dashboard.html";
+            window.location.href = "home.html"; // Mesmo sem localização, vai para a home
           }
         });
       } else {
@@ -52,7 +68,7 @@ window.addEventListener('DOMContentLoaded', () => {
           localStorage.removeItem("voltarPara");
           window.location.href = voltarPara;
         } else {
-          window.location.href = "dashboard.html";
+          window.location.href = "home.html";
         }
       }
 

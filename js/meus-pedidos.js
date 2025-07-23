@@ -30,19 +30,51 @@ window.addEventListener('DOMContentLoaded', async () => {
         console.error("Erro ao buscar cliente:", e);
       }
 
-      const card = `
-        <div class="card">
-          <h3>${pedido.categoria}</h3>
-          <p><strong>Cliente:</strong> ${nomeCliente}</p>
-          <p><strong>Problema:</strong> ${pedido.descricao}</p>
-          <p><strong>Data desejada:</strong> ${pedido.data_prevista || "Não informada"}</p>
-        </div>
-      `;
+      // Criar o card
+      const card = document.createElement('div');
+      card.classList.add('card');
+
+      const categoria = document.createElement('h3');
+      categoria.textContent = pedido.categoria;
+
+      const cliente = document.createElement('p');
+      cliente.innerHTML = `<strong>Cliente:</strong> ${nomeCliente}`;
+
+      const problema = document.createElement('p');
+      problema.innerHTML = `<strong>Problema:</strong> ${pedido.descricao}`;
+
+      const dataDesejada = document.createElement('p');
+      dataDesejada.innerHTML = `<strong>Data desejada:</strong> ${pedido.data_prevista || "Não informada"}`;
+
+      // Adiciona os elementos ao card
+      card.appendChild(categoria);
+      card.appendChild(cliente);
+      card.appendChild(problema);
+      card.appendChild(dataDesejada);
 
       if (pedido.status === 'finalizado') {
-        finalizadosEl.innerHTML += card;
+        finalizadosEl.appendChild(card);
       } else {
-        aceitosEl.innerHTML += card;
+        // Botão "Concluir serviço"
+        const btn = document.createElement('button');
+        btn.textContent = "Concluir serviço";
+        btn.classList.add('btn-concluir');
+
+        btn.addEventListener('click', async () => {
+          try {
+            await db.collection('solicitacoes').doc(doc.id).update({ status: 'finalizado' });
+
+            card.remove();
+            btn.remove();
+            finalizadosEl.appendChild(card);
+          } catch (e) {
+            console.error("Erro ao concluir o pedido:", e);
+            alert("Erro ao concluir o serviço. Tente novamente.");
+          }
+        });
+
+        card.appendChild(btn);
+        aceitosEl.appendChild(card);
       }
     }
   } catch (e) {

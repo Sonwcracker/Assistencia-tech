@@ -1,73 +1,79 @@
 window.addEventListener('DOMContentLoaded', () => {
-  const formCadastro = document.getElementById('cadastroForm');
-  const mensagem = document.getElementById('mensagem');
+  const form = document.getElementById('cadastroForm');
+  const msg = document.getElementById('mensagem');
 
-  if (!formCadastro) {
-    console.error('⚠️ Formulário de cadastro não encontrado!');
+  if (!form) {
+    console.error('❌ Formulário não encontrado.');
     return;
   }
 
-  formCadastro.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const nome = document.getElementById('nome').value;
-    const email = document.getElementById('email').value;
+    // Coleta os dados do formulário
+    const nome = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email').value.trim();
     const senha = document.getElementById('senha').value;
     const tipo = document.getElementById('tipo').value;
-    const cidade = document.getElementById('cidade').value;
-    const estado = document.getElementById('estado').value;
-    const cep = document.getElementById('cep').value;
+    const cidade = document.getElementById('cidade').value.trim();
+    const estado = document.getElementById('estado').value.trim();
+    const cep = document.getElementById('cep').value.trim();
     const profissao = document.getElementById('profissao')?.value;
 
     try {
+      // Cria o usuário no Firebase Auth
       const cred = await auth.createUserWithEmailAndPassword(email, senha);
       const uid = cred.user.uid;
 
-      const userData = {
+      // Monta os dados do usuário
+      const dadosUsuario = {
         nome,
         email,
         tipo,
         cidade,
         estado,
-        cep
+        cep,
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
       };
 
-      // Adiciona a profissão se for técnico
       if (tipo === 'tecnico' && profissao) {
-        userData.profissao = profissao;
+        dadosUsuario.profissao = profissao;
       }
 
-      const salvarDadosUsuario = async (dados) => {
+      const salvarNoFirestore = async (dados) => {
         await db.collection('usuarios').doc(uid).set(dados);
-        mensagem.textContent = "Usuário cadastrado com sucesso!";
+        msg.textContent = '✅ Cadastro realizado com sucesso!';
 
-        // Redireciona com base no tipo
+        // Redirecionamento após cadastro
         if (tipo === 'tecnico') {
-          window.location.href = 'dashboard.html'; // ou página do técnico
+          window.location.href = 'Zlogin/cadastro-perfil.html';
         } else {
-          window.location.href = 'servicos.html'; // ou página do cliente
+          window.location.href = 'servicos.html';
         }
       };
 
-      // Geolocalização
+      // Tentativa de obter localização
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-          userData.lat = position.coords.latitude;
-          userData.lng = position.coords.longitude;
-          await salvarDadosUsuario(userData);
-        }, async (error) => {
-          console.warn("⚠️ Geolocalização falhou:", error.message);
-          await salvarDadosUsuario(userData);
-        });
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            dadosUsuario.lat = position.coords.latitude;
+            dadosUsuario.lng = position.coords.longitude;
+            await salvarNoFirestore(dadosUsuario);
+          },
+          async (error) => {
+            console.warn('⚠️ Erro ao obter localização:', error.message);
+            await salvarNoFirestore(dadosUsuario);
+          }
+        );
       } else {
-        await salvarDadosUsuario(userData);
+        await salvarNoFirestore(dadosUsuario);
       }
-
-    } catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
-        mensagem.textContent = "Este e-mail já está cadastrado.";
+    } catch (erro) {
+      console.error(erro);
+      if (erro.code === 'auth/email-already-in-use') {
+        msg.textContent = '❌ Este e-mail já está em uso.';
       } else {
-        mensagem.textContent = "Erro: " + error.message;
+        msg.textContent = '❌ Erro ao cadastrar: ' + erro.message;
       }
     }
   });

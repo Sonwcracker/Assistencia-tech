@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Perfil Profissional</title>
+  <link rel="stylesheet" href="../css/CSSlogin/style-perfil.css">
+
+</head>
+<body>
+  <div class="form-container">
+    <h2>Complete seu perfil profissional</h2>
+    <form id="perfilForm">
+      <input type="text" id="nome" placeholder="Nome completo" required>
+      <input type="number" id="idade" placeholder="Idade" required>
+      <textarea id="sobre" placeholder="Sobre mim" rows="4" required></textarea>
+      <input type="text" id="localizacao" placeholder="Cidade / Estado" required>
+      <input type="url" id="linkedin" placeholder="Link do LinkedIn (opcional)">
+      <button type="submit">Salvar Perfil</button>
+    </form>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/JSlogin/cadastro-perfil.js" defer></script>
+</body>
+</html>

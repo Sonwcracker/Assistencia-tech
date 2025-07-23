@@ -76,32 +76,59 @@ window.addEventListener('DOMContentLoaded', async () => {
             ? `<div class="notificacao"></div>`
             : '';
 
-          const textoStatus = status === "em_andamento"
-            ? `<strong class="status-andamento">Em andamento</strong>`
-            : 'Aguardando, estamos buscando profissionais';
+          let textoStatus = "";
+          if (status === "em_andamento") {
+            textoStatus = `<strong class="status-andamento">Em andamento</strong>`;
+          } else if (status === "finalizado") {
+            textoStatus = `<strong class="status-finalizado">Pedido finalizado</strong>`;
+          } else {
+            textoStatus = 'Aguardando, estamos buscando profissionais';
+          }
 
           const profissionais = solic.profissionais_encontrados || 0;
           const imagemProf = profissionais > 0
             ? `<img src="img/profissional-exemplo.png" class="img-prof">`
             : '';
 
-          lista.innerHTML += `
-            <a href="pedido-detalhes.html?id=${solicId}" class="link-card">
-              <div class="pedido-card">
-                ${bolinhaStatus}
-                <p class="data-pedido">${data}</p>
-                <div class="card-conteudo">
-                  <div class="info-pedido">
-                    <p class="categoria">Área Solicitada</p>
-                    <h3 class="marca">${solic.profissao_solicitada || "Não informada"}</h3>
-                    <p class="encontrado">${textoStatus}</p>
-                    ${imagemProf}
-                  </div>
-                  <div class="seta">›</div>
+          const cardHTML = `
+            <div class="pedido-card">
+              ${bolinhaStatus}
+              <p class="data-pedido">${data}</p>
+              <div class="card-conteudo">
+                <div class="info-pedido">
+                  <p class="categoria">Área Solicitada</p>
+                  <h3 class="marca">${solic.profissao_solicitada || "Não informada"}</h3>
+                  <p class="encontrado">${textoStatus}</p>
+                  ${imagemProf}
                 </div>
+                <div class="seta">›</div>
               </div>
-            </a>
+            </div>
           `;
+
+          const wrapper = document.createElement('div');
+          wrapper.innerHTML = cardHTML;
+          const cardEl = wrapper.firstElementChild;
+
+          // Se o pedido estiver finalizado e tiver profissional aceito, mostra botão de avaliação
+          if (status === "finalizado" && solic.profissional_aceito_id) {
+            const btnAvaliar = document.createElement('button');
+            btnAvaliar.textContent = "Avaliar profissional";
+            btnAvaliar.classList.add('btn-avaliar');
+
+            btnAvaliar.addEventListener('click', () => {
+              window.location.href = `avaliar.html?id=${solic.profissional_aceito_id}&pedido=${solicId}`;
+            });
+
+            cardEl.appendChild(btnAvaliar);
+          }
+
+          const link = document.createElement('a');
+          link.href = `pedido-detalhes.html?id=${solicId}`;
+          link.classList.add('link-card');
+          link.appendChild(cardEl);
+
+          lista.appendChild(link);
         });
       }
     }

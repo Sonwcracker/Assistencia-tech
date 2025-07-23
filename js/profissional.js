@@ -12,23 +12,67 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const doc = await db.collection("profissoes").doc(profissao).collection("profissionais").doc(id).get();
+    const docProf = await db.collection("profissoes").doc(profissao).collection("profissionais").doc(id).get();
+    const docUser = await db.collection("usuarios").doc(id).get();
 
-    if (!doc.exists) {
+    if (!docProf.exists && !docUser.exists) {
       container.innerHTML = "<p>Profissional não encontrado.</p>";
       return;
     }
 
-    const prof = doc.data();
-    const imagem = prof.foto || "https://via.placeholder.com/300";
-    const nome = prof.nome;
-    const descricao = prof.descricao || "Descrição não informada.";
-    const avaliacao = prof.avaliacao || 0;
-    const preco = prof.preco || "A combinar";
-    const email = prof.email || "email@email.com";
-    const idade = prof.idade || "Não informada";
-    const localizacao = prof.localizacao || "Local não informado";
+    const prof = docProf.data() || {};
+    const user = docUser.data() || {};
 
+    const imagem = prof.foto || user.foto || "https://via.placeholder.com/300";
+    const nome = prof.nome || user.nome || "Profissional";
+    const descricao = prof.descricao || user.descricao || "Sem descrição informada.";
+    const preco = prof.preco || "A combinar";
+    const email = prof.email || user.email || "email@email.com";
+    const idade = prof.idade || user.idade || "Não informada";
+    const localizacao = prof.localizacao || user.localizacao || "Local não informado";
+
+    // Buscar avaliações
+    let avaliacao = 0;
+    let totalAvaliacoes = 0;
+    let comentariosHTML = "";
+
+    try {
+      const avaliacoesSnapshot = await db
+        .collection("usuarios")
+        .doc(id)
+        .collection("avaliacoes")
+        .orderBy("data", "desc")
+        .get();
+
+      totalAvaliacoes = avaliacoesSnapshot.size;
+
+      if (totalAvaliacoes > 0) {
+        let soma = 0;
+        avaliacoesSnapshot.forEach(doc => {
+          const data = doc.data();
+          const nota = data.nota || 0;
+          const comentario = data.comentario || "";
+          const dataFormatada = data.data?.toDate().toLocaleDateString("pt-BR") || "";
+
+          soma += nota;
+
+          comentariosHTML += `
+            <div class="comentario-box">
+              <div class="estrelas-avaliacao">
+                ${'★'.repeat(nota)}${'☆'.repeat(5 - nota)}
+              </div>
+              <p><strong>Comentário:</strong> ${comentario}</p>
+              <small>${dataFormatada}</small>
+            </div>
+          `;
+        });
+        avaliacao = (soma / totalAvaliacoes).toFixed(1);
+      }
+    } catch (e) {
+      console.error("Erro ao buscar avaliações:", e);
+    }
+
+    // Montar HTML
     container.innerHTML = `
       <h1>Perfil</h1>
       <p class="subtitulo">Sou um profissional especializado em ${profissao}</p>
@@ -49,14 +93,11 @@ window.addEventListener("DOMContentLoaded", async () => {
           <p><strong>Nome:</strong> ${nome}</p>
           <p><strong>Idade:</strong> ${idade}</p>
           <p><strong>Localização:</strong> ${localizacao}</p>
-          <p><strong>Avaliação:</strong> ${avaliacao} ★</p>
+          <p><strong>Avaliação:</strong> ${
+            totalAvaliacoes > 0 ? `${avaliacao} ★ (${totalAvaliacoes} avaliações)` : "Ainda sem avaliações"
+          }</p>
           <p><strong>Preço:</strong> R$ ${preco}</p>
           <button class="btn-contato" onclick="window.location.href='mailto:${email}'">Entrar em contato</button>
-          <div class="redes-sociais">
-            <ion-icon name="logo-facebook"></ion-icon>
-            <ion-icon name="logo-twitter"></ion-icon>
-            <ion-icon name="logo-instagram"></ion-icon>
-          </div>
         </div>
       </div>
 
@@ -74,6 +115,11 @@ window.addEventListener("DOMContentLoaded", async () => {
         <button class="btn-login-acesso" onclick="realizarLogin()">Entrar / Cadastrar</button>
         <p id="mensagem-login" style="color: red; margin-top: 10px;"></p>
       </div>
+
+      <div class="avaliacoes-clientes">
+        <h3>Avaliações de clientes</h3>
+        ${comentariosHTML || "<p>Nenhuma avaliação ainda.</p>"}
+      </div>
     `;
   } catch (error) {
     console.error("Erro ao carregar profissional:", error);
@@ -81,13 +127,11 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// Exibir o card de login ao clicar no botão
 function mostrarLoginCard() {
   const loginCard = document.getElementById("card-login");
   if (loginCard) loginCard.style.display = "block";
 }
 
-// Função de login/cadastro
 function realizarLogin() {
   const auth = firebase.auth();
   const nome = document.getElementById("nome").value.trim();
