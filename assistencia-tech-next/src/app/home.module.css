@@ -105,3 +105,38 @@
 .cardTitle {
   font-size: 1.5rem;
 }
+
+/* nav - estilo */
+
+.atTop {
+  background-color: rgba(248, 249, 250, 0.1);
+  box-shadow: none;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.atTop .brand {
+    color: #ccc;
+}
+
+.atTop .navLink {
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.atTop .navLink:hover {
+  color: #f0f0f0;
+}
+
+.atTop .loginButton {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.8);
+  background-color: transparent;
+}
+
+.atTop .loginButton:hover {
+  background-color: #ccc;
+  border-color: #fff;
+  color: #007bff;
+}
+

@@ -1,11 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
 
 export default function Navbar() {
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
+
   const [isVisible, setIsVisible] = useState(true);
   const [isAtTop, setIsAtTop] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -13,30 +17,31 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
       setIsAtTop(currentScrollY === 0);
 
+      // Esta lógica agora funciona em todas as páginas
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsVisible(false);
+        setIsVisible(false); // Rolando para baixo
       } else {
-        setIsVisible(true);
+        setIsVisible(true); // Rolando para cima
       }
 
       setLastScrollY(currentScrollY);
     };
 
+    // A lógica de scroll agora é adicionada globalmente, não só na Home
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [lastScrollY]);
+  }, [lastScrollY]); // O listener depende apenas da posição do scroll
 
   return (
     <header
       className={`
         ${styles.header}
-        ${isAtTop ? styles.atTop : ''}
+        ${isHomePage && isAtTop ? styles.atTop : ''}
         ${!isVisible ? styles.hidden : ''}
       `}
     >
@@ -44,7 +49,6 @@ export default function Navbar() {
         <Link href="/" className={styles.brand}>
           Servify
         </Link>
-
         <nav className={styles.nav}>
           <ul className={styles.navList}>
             <li><Link href="/" className={styles.navLink}>Início</Link></li>
@@ -54,7 +58,6 @@ export default function Navbar() {
             <li><Link href="/sobre" className={styles.navLink}>Sobre</Link></li>
           </ul>
         </nav>
-
         <Link href="/login" className={styles.loginButton}>
           Entrar
         </Link>
