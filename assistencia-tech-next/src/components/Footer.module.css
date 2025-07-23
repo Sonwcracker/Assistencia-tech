@@ -1,0 +1,40 @@
+.footer {
+  width: 100%;
+  padding: 2rem 0;
+  background-color: #0180ff; 
+  border-top: 1px solid #e9ecef; /* Linha sutil de separação */
+  margin-top: auto; /* Empurra o footer para o final da página */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between; /* Coloca um item na esquerda e outro na direita */
+  align-items: center;
+  flex-wrap: wrap; /* Permite que os itens quebrem a linha em telas menores */
+  gap: 1rem;
+}
+
+.copyright {
+  color: #ccc; /* Cor de texto suave */
+  font-size: 0.9rem;
+}
+
+.nav {
+  display: flex;
+  gap: 1.5rem; /* Espaçamento entre os links */
+}
+
+.link {
+  color: #ccc;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.link:hover {
+  color: #007bff; /* Cor de destaque ao passar o mouse */
+  text-decoration: underline;
+}
