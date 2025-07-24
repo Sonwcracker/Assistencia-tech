@@ -1,13 +1,15 @@
+/* Estilo geral da página (Tema Claro) */
 .pageContainer {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #111;
+  background-color: #f8f9fa; /* Fundo cinza claro */
   padding: 2rem;
 }
 
+/* Card principal */
 .cardWrapper {
   width: 100%;
   max-width: 900px;
@@ -37,160 +39,230 @@
   display: flex;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
 }
 
 .cardFaceBack {
   transform: rotateY(180deg);
 }
 
+/* Painel do Formulário (Esquerda/Direita) */
 .formPanel {
-  flex: 1;
-  background-color: #1a1a1a;
-  padding: 40px;
+  flex-basis: 60%; /* Ocupa 60% da largura */
+  padding: 40px 50px;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow-y: auto; /* permite rolagem */
 }
 
 .formContainer {
   width: 100%;
-  max-width: 350px;
-  color: #fff;
-  text-align: center;
-  max-height: 100%;
-  overflow-y: auto;
-  padding-right: 5px;
-}
-
-.formContainer::-webkit-scrollbar {
-  width: 6px;
-}
-
-.formContainer::-webkit-scrollbar-thumb {
-  background-color: #555;
-  border-radius: 5px;
+  max-width: 400px;
+  color: #333;
+  text-align: left;
 }
 
 .formContainer h2 {
   font-size: 2rem;
-  margin-bottom: 10px;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
-.formContainer p {
-  color: #aaa;
-  margin-bottom: 30px;
+.stepIndicator {
+  font-size: 1.5rem;
+  font-weight: normal;
+  color: #888;
 }
 
 .form {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  margin-top: 1.5rem;
 }
 
-.form input,
-.form select {
+.form input, .form select, .form textarea {
   width: 100%;
   padding: 12px 15px;
   border-radius: 8px;
-  border: 1px solid #444;
-  background-color: #2a2a2a;
-  color: #fff;
+  border: 1px solid #ccc;
+  background-color: #f8f9fa;
+  color: #333;
   font-size: 1rem;
 }
 
-.submitButton {
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  background-color: #007bff;
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: opacity 0.3s;
-}
-
-.submitButton:hover {
-  opacity: 0.9;
-}
-
+/* Painel de CTA (Call to Action) */
 .ctaPanel {
-  flex: 1;
+  flex-basis: 40%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 40px;
   text-align: center;
-  color: #1a1a1a;
+  background-color: #e9ecef;
 }
 
-.ctaPanelRight {
-  background-image: linear-gradient(to bottom right, #fff, #e0e0e0);
+/* Botões de navegação das etapas */
+.stepNav {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1.5rem;
 }
 
-.ctaPanelLeft {
-  background-image: linear-gradient(to bottom left, #fff, #e0e0e0);
-}
-
-.ctaIcon {
-  font-size: 5rem;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-.ctaPanel h3 {
-  font-size: 2.2rem;
-  margin-bottom: 15px;
-}
-
-.ctaPanel p {
-  max-width: 300px;
-  color: #555;
-  margin-bottom: 25px;
-}
-
-.switchButton {
+.prevButton, .nextButton, .submitButton {
   padding: 12px 25px;
   border-radius: 8px;
-  border: 2px solid #333;
-  background: transparent;
-  color: #333;
-  font-size: 1rem;
+  border: none;
   font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  transition: opacity 0.3s;
 }
 
-.switchButton:hover {
-  background-color: #333;
+.prevButton {
+  background-color: #6c757d;
   color: #fff;
 }
 
+.nextButton {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.submitButton {
+  background-color: #28a745; /* Verde para finalizar */
+  color: #fff;
+  width: 100%;
+}
+
+.stepNav > .nextButton:first-child {
+  margin-left: auto;
+}
+
+/* Outros estilos */
 .loginLink {
   margin-top: 2rem;
-  color: #aaa;
+  color: #555;
 }
 
 .loginLink a {
-  color: #fff;
+  color: #007bff;
   font-weight: bold;
   text-decoration: none;
 }
 
-.previewContainer {
-  margin-top: 10px;
+/* Estilo do Formulário Atualizado */
+.formPanel {
+  flex-basis: 60%;
+  padding: 40px 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+}
+
+.formContainer {
+  width: 100%;
+  max-width: 400px;
+  color: #333;
+}
+
+.formContainer h2 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.form {
+  margin-top: 1.5rem;
+}
+
+.formRow {
+  display: flex;
+  gap: 15px;
+}
+
+.formRow > input {
+  width: 100%;
+}
+
+.addressField { flex: 3; }
+.numberField { flex: 1; }
+
+/* Checklist de Senha */
+.passwordRequirements {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 0.8rem;
+  margin: 5px 0 10px 0;
+}
+
+.requirement {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #e74c3c; /* Vermelho por padrão */
+}
+
+.requirement.valid {
+  color: #2ecc71; /* Verde quando válido */
+}
+
+/* Mensagens de Erro */
+.errorMessage {
+  color: #e74c3c;
+  font-size: 0.8rem;
+  margin-top: -10px;
+}
+
+/* Botões */
+.nextButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Esconde o input de arquivo padrão */
+.fileInput {
+  display: none;
+}
+
+/* Estiliza o label para parecer um botão moderno */
+.fileInputLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 2px dashed #ccc;
+  background-color: #f8f9fa;
+  color: #555;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
   text-align: center;
 }
 
-.previewImage {
-  max-width: 150px;
-  height: auto;
-  border-radius: 10px;
-  border: 2px solid #ccc;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+.fileInputLabel:hover {
+  background-color: #e9ecef;
+  border-color: #007bff;
 }
 
+.fileInputLabel svg {
+  font-size: 1.2rem;
+}
+
+.previewContainer {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.previewImage {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #eee;
+}
