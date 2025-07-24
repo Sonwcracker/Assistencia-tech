@@ -96,3 +96,22 @@
 .atTop .loginButton:hover {
   color: #bbb;
 }
+
+.actionsContainer {
+  width: 80px; /* Largura fixa para evitar pulos no layout */
+  display: flex;
+  justify-content: flex-end;
+}
+
+.loader {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #ddd;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
