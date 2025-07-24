@@ -4,7 +4,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #111; /* Fundo escuro para a página */
+  background-color: #111;
   padding: 2rem;
 }
 
@@ -12,7 +12,7 @@
   width: 100%;
   max-width: 900px;
   height: 600px;
-  perspective: 1500px; /* Efeito 3D para o flip */
+  perspective: 1500px;
 }
 
 .cardInner {
@@ -24,7 +24,7 @@
 }
 
 .cardInner.isFlipped {
-  transform: rotateY(180deg); /* O 'pulo do gato' da animação */
+  transform: rotateY(180deg);
 }
 
 .cardFaceFront,
@@ -32,7 +32,7 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  -webkit-backface-visibility: hidden; /* Esconde o lado de trás do elemento */
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   display: flex;
   border-radius: 20px;
@@ -51,6 +51,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow-y: auto; /* permite rolagem */
 }
 
 .formContainer {
@@ -58,6 +59,18 @@
   max-width: 350px;
   color: #fff;
   text-align: center;
+  max-height: 100%;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.formContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.formContainer::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 5px;
 }
 
 .formContainer h2 {
@@ -76,7 +89,8 @@
   gap: 15px;
 }
 
-.form input, .form select {
+.form input,
+.form select {
   width: 100%;
   padding: 12px 15px;
   border-radius: 8px;
