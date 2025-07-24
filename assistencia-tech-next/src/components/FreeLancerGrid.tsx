@@ -5,7 +5,7 @@ import styles from '../app/profissionais/profissionais.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
 
-// As interfaces continuam as mesmas...
+// Interfaces
 interface Freelancer {
   id: string;
   nome: string;
@@ -18,29 +18,29 @@ interface Profissao {
   nome: string;
 }
 
-// 1. Adicione a nova propriedade 'onFilterChange'
 interface Props {
   allFreelancers: Freelancer[];
   allProfessions: Profissao[];
-  onFilterChange: (newTitle: string) => void; 
+  onFilterChange: (newTitle: string) => void;
+  initialFilter: string; 
 }
 
-export default function FreelancerGrid({ allFreelancers, allProfessions, onFilterChange }: Props) {
-  const [selectedProfession, setSelectedProfession] = useState('todos');
+export default function FreelancerGrid({ allFreelancers, allProfessions, onFilterChange, initialFilter }: Props) {
+  // O estado inicial agora é definido de forma confiável pelo prop
+  const [selectedProfession, setSelectedProfession] = useState(initialFilter);
   const [filteredFreelancers, setFilteredFreelancers] = useState(allFreelancers);
 
+  // Este useEffect é o principal. Ele reage a mudanças no filtro.
   useEffect(() => {
-    // 2. Lógica para filtrar e chamar o callback com o novo título
     if (selectedProfession === 'todos') {
       setFilteredFreelancers(allFreelancers);
-      onFilterChange('Todos os Freelancers'); // Avisa o pai para usar o título padrão
+      onFilterChange('Todos os Freelancers');
     } else {
       const filtered = allFreelancers.filter(f => f.profissao === selectedProfession);
       setFilteredFreelancers(filtered);
       
-      // Encontra o nome completo da profissão para enviar ao pai
       const professionName = allProfessions.find(p => p.id === selectedProfession)?.nome || 'Freelancers';
-      onFilterChange(professionName); // Avisa o pai sobre o novo título
+      onFilterChange(professionName);
     }
   }, [selectedProfession, allFreelancers, allProfessions, onFilterChange]);
 

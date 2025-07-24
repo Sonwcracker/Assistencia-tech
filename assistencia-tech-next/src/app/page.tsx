@@ -27,12 +27,12 @@ export default function HomePage() {
         const profissoesCollection = collection(db, 'profissoes');
         const q = query(profissoesCollection, orderBy('nome'));
         const querySnapshot = await getDocs(q);
-        
+
         const profissoesData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         })) as Profissao[];
-        
+
         setProfissoes(profissoesData);
       } catch (error) {
         console.error("Erro ao buscar profissões:", error);
@@ -74,7 +74,7 @@ export default function HomePage() {
           <p className={styles.sectionSubtitle}>Encontrar profissionais</p>
           <h2 className={styles.sectionTitle}>Serviços Oferecidos</h2>
           <p className={styles.sectionText}>Serviços separados por categorias</p>
-          
+
           {loading ? (
             <p>Carregando profissões...</p>
           ) : (
@@ -82,8 +82,10 @@ export default function HomePage() {
               <ul className={styles.popularList}>
                 {profissoes.slice(0, visibleCount).map((profissao) => (
                   <li key={profissao.id}>
-                    <Link href={`/servicos/${profissao.id}`}>
+                    {/* AQUI ESTÁ A MUDANÇA: Ajuste o href do Link */}
+                    <Link href={`/profissionais?filtro=${profissao.id}`}>
                       <div className={styles.popularCard}>
+                        {/* O conteúdo do card permanece o mesmo */}
                         <figure className={styles.cardImg}>
                           <Image
                             src={profissao.imagemUrl || '/images/placeholder.png'}
@@ -107,7 +109,7 @@ export default function HomePage() {
                     Ver menos
                   </button>
                 )}
-                
+
                 {!isShowingAll && profissoes.length > 0 && (
                   <button onClick={handleVerMais} className={`${styles.btn} ${styles.btnPrimary}`}>
                     Ver mais serviços
