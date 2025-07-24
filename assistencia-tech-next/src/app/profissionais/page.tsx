@@ -1,12 +1,12 @@
-'use client'; // 1. Torne esta página um componente de cliente
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import styles from './profissionais.module.css';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import FreelancerGrid from '../../components/FreeLancerGrid'; 
+import FreelancerGrid from '../../components/FreeLancerGrid';
 
-// Interfaces...
+// Interfaces
 interface Freelancer {
   id: string;
   nome: string;
@@ -19,14 +19,16 @@ interface Profissao {
   nome: string;
 }
 
-export default function ProfissionaisPage() {
-  // 2. Adicione estados para os dados e para o título
+// 1. Adicione a prop 'searchParams' à função da página
+export default function ProfissionaisPage({ searchParams }: { searchParams: { filtro: string } }) {
   const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
   const [profissoes, setProfissoes] = useState<Profissao[]>([]);
   const [pageTitle, setPageTitle] = useState('Todos os Freelancers');
   const [loading, setLoading] = useState(true);
 
-  // 3. Mova a busca de dados para um useEffect
+  // 2. Obtenha o filtro inicial diretamente da prop 'searchParams'
+  const filtroInicial = searchParams.filtro || 'todos';
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -47,9 +49,8 @@ export default function ProfissionaisPage() {
       }
     }
     fetchData();
-  }, []); // Array vazio garante que a busca aconteça apenas uma vez
+  }, []);
 
-  // 4. Crie a função de callback que será passada para o filho
   const handleFilterChange = (newTitle: string) => {
     setPageTitle(newTitle);
   };
@@ -66,7 +67,8 @@ export default function ProfissionaisPage() {
       <FreelancerGrid 
         allFreelancers={freelancers} 
         allProfessions={profissoes}
-        onFilterChange={handleFilterChange} // 5. Passe a função como prop
+        onFilterChange={handleFilterChange}
+        initialFilter={filtroInicial} // 3. Passe o filtro obtido para o componente
       />
     </div>
   );
