@@ -10,11 +10,10 @@ import { signOut } from 'firebase/auth';
 import { IoPersonCircleOutline, IoLogOutOutline } from 'react-icons/io5';
 
 export default function ProfileMenu() {
-  const { user } = useAuth();
+  const { user, userData } = useAuth(); // userData vem do Firestore
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Efeito para fechar o menu se clicar fora dele
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -33,11 +32,16 @@ export default function ProfileMenu() {
 
   if (!user) return null;
 
+  // Define as informações a serem exibidas, priorizando o Firestore (userData)
+  const displayName = userData?.nome || user.displayName || 'Usuário';
+  const displayEmail = user.email;
+  const displayPhotoURL = userData?.foto || user.photoURL || '/images/placeholder-profile.png';
+
   return (
     <div className={styles.profileContainer} ref={menuRef}>
       <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={styles.profileButton}>
         <Image
-          src={user.photoURL || '/images/placeholder-profile.png'} // Usa a foto do Google ou um placeholder
+          src={displayPhotoURL}
           alt="Foto de perfil"
           width={32}
           height={32}
@@ -49,15 +53,15 @@ export default function ProfileMenu() {
         <div className={styles.dropdownMenu}>
           <div className={styles.userInfo}>
             <Image
-              src={user.photoURL || '/images/placeholder-profile.png'}
+              src={displayPhotoURL}
               alt="Foto de perfil"
               width={48}
               height={48}
               className={styles.dropdownImage}
             />
             <div className={styles.userDetails}>
-              <span className={styles.userName}>{user.displayName || 'Usuário'}</span>
-              <span className={styles.userEmail}>{user.email}</span>
+              <span className={styles.userName}>{displayName}</span>
+              <span className={styles.userEmail}>{displayEmail}</span>
             </div>
           </div>
           <ul className={styles.menuList}>

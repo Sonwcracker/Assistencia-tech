@@ -1,0 +1,131 @@
+.sectionCard {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  margin-top: 2rem;
+  padding: 2rem;
+  max-width: 600px;
+}
+.sectionCard h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+.inputGroup label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.inputGroup input {
+  padding: 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+.saveButton {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.saveButton:hover {
+    background-color: #0056b3;
+}
+.message {
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: #28a745; /* Cor de sucesso */
+}
+
+/* Seção de Exclusão */
+.deleteSection {
+  margin-top: 3rem;
+  padding: 2rem;
+  border: 1px solid #f5c6cb;
+  background-color: #f8d7da;
+  border-radius: 12px;
+  max-width: 600px;
+}
+.deleteSection h3 {
+  color: #721c24;
+}
+.deleteSection p {
+    color: #721c24;
+    margin-top: 0.5rem;
+}
+.deleteButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.2s;
+}
+.deleteButton:hover {
+    background-color: #c82333;
+}
+
+/* Estilos do Modal */
+.modalContent h2 {
+    color: #333;
+}
+.modalContent p {
+    color: #555;
+    margin: 1rem 0;
+}
+.confirmationPhrase {
+    background-color: #e9ecef;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-family: monospace;
+    font-weight: bold;
+    color: #333;
+}
+.modalInput {
+    width: 100%;
+    padding: 0.7rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin: 1rem 0;
+}
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.cancelButton, .confirmButton {
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.cancelButton {
+    background-color: #6c757d;
+    color: white;
+}
+.confirmButton {
+    background-color: #007bff;
+    color: white;
+}
+.confirmButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+.deleteError {
+    color: #721c24;
+    font-weight: bold;
+    margin-top: 1rem;
+}
