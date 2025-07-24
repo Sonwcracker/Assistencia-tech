@@ -1,29 +1,28 @@
-<<<<<<< HEAD
-// next.config.ts
-import type { NextConfig } from "next";
-=======
 import { NextConfig } from 'next';
->>>>>>> b18c9c2210511c2981bf37c557d928d66ef33417
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
   images: {
-<<<<<<< HEAD
-    domains: [
-      "s3.amazonaws.com",
-      "cptstatic.s3.amazonaws.com", // opcionalmente esse também
-=======
     remotePatterns: [
+      // Domínio principal do Firebase Storage
       {
         protocol: 'https',
         hostname: 'firebasestorage.googleapis.com',
       },
-      // ADICIONE ESTE NOVO BLOCO para o domínio do erro
+      // Outros domínios que já configuramos
       {
         protocol: 'https',
         hostname: 'img.cdndsgni.com',
       },
->>>>>>> b18c9c2210511c2981bf37c557d928d66ef33417
+      // Domínios que estavam no seu conflito
+      {
+        protocol: 'https',
+        hostname: 's3.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cptstatic.s3.amazonaws.com',
+      },
     ],
   },
 };
