@@ -36,3 +36,6 @@ a {
 .main-content {
   flex: 1;
 }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
