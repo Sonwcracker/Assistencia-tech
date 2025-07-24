@@ -55,7 +55,7 @@ export default function Navbar() {
           <ul className={styles.navList}>
             <li><Link href="/" className={styles.navLink}>Início</Link></li>
             <li><Link href="/profissionais" className={styles.navLink}>Profissionais</Link></li>
-            <li><Link href="/solicitacoes" className={styles.navLink}>Solicitações</Link></li>
+            <li><Link href="/servicos" className={styles.navLink}>Serviços</Link></li>
             <li><Link href="/assinatura" className={styles.navLink}>Assinatura</Link></li>
             <li><Link href="/sobre" className={styles.navLink}>Sobre</Link></li>
           </ul>
