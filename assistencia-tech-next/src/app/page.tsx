@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './home.module.css';
-
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
@@ -82,10 +81,8 @@ export default function HomePage() {
               <ul className={styles.popularList}>
                 {profissoes.slice(0, visibleCount).map((profissao) => (
                   <li key={profissao.id}>
-                    {/* AQUI ESTÁ A MUDANÇA: Ajuste o href do Link */}
                     <Link href={`/profissionais?filtro=${profissao.id}`}>
                       <div className={styles.popularCard}>
-                        {/* O conteúdo do card permanece o mesmo */}
                         <figure className={styles.cardImg}>
                           <Image
                             src={profissao.imagemUrl || '/images/placeholder.png'}
