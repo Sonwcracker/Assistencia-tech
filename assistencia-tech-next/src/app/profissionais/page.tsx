@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation'; 
 import styles from './profissionais.module.css';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
@@ -11,7 +12,7 @@ interface Freelancer {
   id: string;
   nome: string;
   profissao: string;
-  imagemUrl?: string;
+  foto?: string;
 }
 
 interface Profissao {
@@ -19,15 +20,16 @@ interface Profissao {
   nome: string;
 }
 
-// 1. Adicione a prop 'searchParams' à função da página
-export default function ProfissionaisPage({ searchParams }: { searchParams: { filtro: string } }) {
+// 2. Remova a prop 'searchParams' da função
+export default function ProfissionaisPage() {
   const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
   const [profissoes, setProfissoes] = useState<Profissao[]>([]);
   const [pageTitle, setPageTitle] = useState('Todos os Freelancers');
   const [loading, setLoading] = useState(true);
 
-  // 2. Obtenha o filtro inicial diretamente da prop 'searchParams'
-  const filtroInicial = searchParams.filtro || 'todos';
+  // 3. Use o hook para ler os parâmetros da URL
+  const searchParams = useSearchParams();
+  const filtroInicial = searchParams.get('filtro') || 'todos';
 
   useEffect(() => {
     async function fetchData() {
@@ -68,7 +70,7 @@ export default function ProfissionaisPage({ searchParams }: { searchParams: { fi
         allFreelancers={freelancers} 
         allProfessions={profissoes}
         onFilterChange={handleFilterChange}
-        initialFilter={filtroInicial} // 3. Passe o filtro obtido para o componente
+        initialFilter={filtroInicial}
       />
     </div>
   );

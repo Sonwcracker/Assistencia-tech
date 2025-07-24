@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import styles from '../app/profissionais/profissionais.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
 
-// Interfaces
 interface Freelancer {
   id: string;
   nome: string;
   profissao: string;
-  imagemUrl?: string;
+  foto?: string;
 }
 
 interface Profissao {
@@ -22,15 +22,15 @@ interface Props {
   allFreelancers: Freelancer[];
   allProfessions: Profissao[];
   onFilterChange: (newTitle: string) => void;
-  initialFilter: string; 
+  initialFilter: string;
 }
 
 export default function FreelancerGrid({ allFreelancers, allProfessions, onFilterChange, initialFilter }: Props) {
-  // O estado inicial agora é definido de forma confiável pelo prop
+  const router = useRouter();
+  const pathname = usePathname();
   const [selectedProfession, setSelectedProfession] = useState(initialFilter);
   const [filteredFreelancers, setFilteredFreelancers] = useState(allFreelancers);
 
-  // Este useEffect é o principal. Ele reage a mudanças no filtro.
   useEffect(() => {
     if (selectedProfession === 'todos') {
       setFilteredFreelancers(allFreelancers);
@@ -44,6 +44,16 @@ export default function FreelancerGrid({ allFreelancers, allProfessions, onFilte
     }
   }, [selectedProfession, allFreelancers, allProfessions, onFilterChange]);
 
+  const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newFilter = e.target.value;
+    setSelectedProfession(newFilter);
+
+    const newUrl = newFilter === 'todos' 
+      ? pathname 
+      : `${pathname}?filtro=${newFilter}`;
+    router.push(newUrl, { scroll: false });
+  };
+
   return (
     <div className={styles.contentContainer}>
       <div className={styles.filterBar}>
@@ -52,7 +62,7 @@ export default function FreelancerGrid({ allFreelancers, allProfessions, onFilte
           id="profession-filter"
           className={styles.filterSelect}
           value={selectedProfession}
-          onChange={(e) => setSelectedProfession(e.target.value)}
+          onChange={handleSelectionChange}
         >
           <option value="todos">Todas as Profissões</option>
           {allProfessions.map(prof => (
@@ -66,7 +76,7 @@ export default function FreelancerGrid({ allFreelancers, allProfessions, onFilte
           <Link href={`/profissionais/${freelancer.id}`} key={freelancer.id} className={styles.card}>
             <figure className={styles.cardImageContainer}>
               <Image
-                src={freelancer.imagemUrl || '/images/placeholder.jpg'}
+                src={freelancer.foto || '/images/placeholder.png'}
                 alt={`Foto de ${freelancer.nome}`}
                 fill
                 style={{ objectFit: 'cover' }}

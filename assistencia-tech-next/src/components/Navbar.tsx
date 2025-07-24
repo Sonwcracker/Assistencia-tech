@@ -5,8 +5,11 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
+import { useAuth } from '@/context/AuthContext';
+import ProfileMenu from './ProfileMenu';
 
 export default function Navbar() {
+  const { user, loading } = useAuth();
   const pathname = usePathname();
   const isHomePage = pathname === '/';
 
@@ -19,32 +22,31 @@ export default function Navbar() {
       const currentScrollY = window.scrollY;
       setIsAtTop(currentScrollY === 0);
 
-      // Esta lógica agora funciona em todas as páginas
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsVisible(false); // Rolando para baixo
+        setIsVisible(false);
       } else {
-        setIsVisible(true); // Rolando para cima
+        setIsVisible(true);
       }
 
       setLastScrollY(currentScrollY);
     };
 
-    // A lógica de scroll agora é adicionada globalmente, não só na Home
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [lastScrollY]); // O listener depende apenas da posição do scroll
+  }, [lastScrollY]);
+
+  // Lógica para construir a string de classes de forma segura
+  const headerClassNames = [
+    styles.header,
+    isHomePage && isAtTop && styles.atTop,
+    !isVisible && styles.hidden
+  ].filter(Boolean).join(' ');
 
   return (
-    <header
-      className={`
-        ${styles.header}
-        ${isHomePage && isAtTop ? styles.atTop : ''}
-        ${!isVisible ? styles.hidden : ''}
-      `}
-    >
+    <header className={headerClassNames}>
       <div className={styles.container}>
         <Link href="/" className={styles.brand}>
           Servify
@@ -53,14 +55,23 @@ export default function Navbar() {
           <ul className={styles.navList}>
             <li><Link href="/" className={styles.navLink}>Início</Link></li>
             <li><Link href="/profissionais" className={styles.navLink}>Profissionais</Link></li>
-            <li><Link href="/solicitações" className={styles.navLink}>Solicitações</Link></li>
+            <li><Link href="/solicitacoes" className={styles.navLink}>Solicitações</Link></li>
             <li><Link href="/assinatura" className={styles.navLink}>Assinatura</Link></li>
             <li><Link href="/sobre" className={styles.navLink}>Sobre</Link></li>
           </ul>
         </nav>
-        <Link href="/login" className={styles.loginButton}>
-          Entrar
-        </Link>
+        
+        <div className={styles.actionsContainer}>
+          {loading ? (
+            <div className={styles.loader}></div>
+          ) : user ? (
+            <ProfileMenu />
+          ) : (
+            <Link href="/login" className={styles.loginButton}>
+              Entrar
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );

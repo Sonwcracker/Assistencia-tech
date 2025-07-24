@@ -1,0 +1,96 @@
+.profileContainer {
+  position: relative;
+}
+
+.profileButton {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileImage {
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.profileButton:hover .profileImage {
+  border-color: #007bff;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 15px);
+  right: 0;
+  background-color: #2a2a2a;
+  color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+  width: 300px;
+  padding: 1rem;
+  z-index: 100;
+  border: 1px solid #444;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #444;
+}
+
+.dropdownImage {
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.userName {
+  font-weight: bold;
+}
+
+.userEmail {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+
+.menuList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 1rem;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #eee;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.menuItem:hover {
+  background-color: #3a3a3a;
+}
+
+.menuItem svg {
+  font-size: 1.2rem;
+}
