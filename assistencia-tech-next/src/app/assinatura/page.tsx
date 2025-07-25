@@ -1,40 +1,36 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./valor.module.css";
-import { Check, Download, Monitor, Volume2 } from "lucide-react";
+import { Check, Download } from "lucide-react";
 
 export default function PricingPlans() {
-  const [billingPeriod, setBillingPeriod] = useState("monthly");
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
+  const [fade, setFade] = useState("fade-in");
+
+  useEffect(() => {
+    setFade("fade-out");
+    const timeout = setTimeout(() => {
+      setFade("fade-in");
+    }, 200);
+    return () => clearTimeout(timeout);
+  }, [billingPeriod]);
 
   const plans = [
     {
-      name: "Básico com Anúncios",
-      price: "R$29,90",
+      name: "Plano Básico",
+      price: billingPeriod === "monthly" ? "R$29,90" : "R$200,00",
       features: [
-        { icon: Monitor, text: "2 dispositivos ao mesmo tempo" },
-        { icon: Monitor, text: "Resolução Full HD" },
+        { text: "Você estará dentro da nossa página" },
       ],
     },
     {
-      name: "Standard",
-      price: "R$39,90",
+      name: "Plano Pro",
+      price: billingPeriod === "monthly" ? "R$39,90" : "R$1.000,00",
       features: [
-        { icon: Monitor, text: "2 dispositivos ao mesmo tempo" },
-        { icon: Monitor, text: "Resolução Full HD" },
-        { icon: Download, text: "30 downloads para curtir off-line" },
+        { text: "estara dentro do site" },
+        { text: "ficara em maior evidencia dentro do site." },
       ],
-    },
-    {
-      name: "Platinum",
-      price: "R$55,90",
-      features: [
-        { icon: Monitor, text: "4 dispositivos ao mesmo tempo" },
-        { icon: Monitor, text: "Resolução Full HD e 4K Ultra HD" },
-        { icon: Volume2, text: "Áudio Dolby Atmos" },
-        { icon: Download, text: "100 downloads para curtir off-line" },
-      ],
-      popular: true,
     },
   ];
 
@@ -66,26 +62,20 @@ export default function PricingPlans() {
 
         <div className={styles.cards}>
           {plans.map((plan, index) => (
-            <div
-              key={index}
-              className={`${styles.card} ${
-                plan.popular ? styles.popular : ""
-              }`}
-            >
+            <div key={index} className={styles.card}>
               <h3>{plan.name}</h3>
 
               <div className={styles.features}>
                 {plan.features.map((feature, featureIndex) => (
                   <div key={featureIndex} className={styles.featureItem}>
                     <Check className={styles.checkIcon} />
-                    <feature.icon className={styles.icon} />
                     <span>{feature.text}</span>
                   </div>
                 ))}
               </div>
 
               <div className={styles.priceBox}>
-                <div className={styles.price}>
+                <div className={`${styles.price} ${styles[fade]}`}>
                   {plan.price}
                   <span className={styles.priceNote}>/mês</span>
                 </div>

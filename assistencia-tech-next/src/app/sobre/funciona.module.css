@@ -1,5 +1,5 @@
 .perfil-container {
-  background-color:black;
+  background-color:white;
   padding-top: 2rem;
   position: relative;
   text-align: center;
@@ -8,7 +8,7 @@
 }
 
 .perfil-tabs {
-  background-color:black;
+  background-color:white;
   display: flex;
   justify-content: center;
   gap: 1rem;
@@ -32,17 +32,17 @@
 }
 
 .cliente {
-  background-color:black;
-  color: #fff;
+  background-color:white;
+  color: black;
 }
 
 .especialista {
-   background-color:black;
-  color: #fff;
+   background-color:white;
+  color: black;
 }
 
 .indicador {
-   background-color:black;
+   background-color:white;
   padding: 1rem;
   font-weight: bold;
   position: relative;

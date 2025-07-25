@@ -65,7 +65,8 @@ export default function HomePage() {
             oferecendo uma plataforma eficiente, segura e acessível para a contratação de serviços gerais.
           </p>
           <div className="btn-group">
-            <button className={`${styles.btn} ${styles.btnPrimary}`}>Saber mais</button>
+           <Link href="/sobre" className={styles.navLink}>
+            <button className={`${styles.btn} ${styles.btnPrimary}`}>Saber mais</button></Link>
           </div>
         </div>
       </section>
