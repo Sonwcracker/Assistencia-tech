@@ -5,7 +5,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f8f9fa; /* Fundo cinza claro */
+  background-color: #f8f9fa;
   padding: 2rem;
 }
 
@@ -13,8 +13,9 @@
 .cardWrapper {
   width: 100%;
   max-width: 900px;
-  height: 600px;
+  height: 650px;
   perspective: 1500px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .cardInner {
@@ -49,7 +50,8 @@
 
 /* Painel do Formulário (Esquerda/Direita) */
 .formPanel {
-  flex-basis: 60%; /* Ocupa 60% da largura */
+  flex-basis: 60%;
+  /* Ocupa 60% da largura */
   padding: 40px 50px;
   display: flex;
   justify-content: center;
@@ -60,19 +62,20 @@
   width: 100%;
   max-width: 400px;
   color: #333;
-  text-align: left;
+  text-align: center; 
 }
 
 .formContainer h2 {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: bold;
-  margin-bottom: 0.5rem;
 }
 
 .stepIndicator {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: normal;
   color: #888;
+  margin-top: 0.5rem; 
+  display: block; 
 }
 
 .form {
@@ -80,9 +83,12 @@
   flex-direction: column;
   gap: 15px;
   margin-top: 1.5rem;
+  text-align: left; 
 }
 
-.form input, .form select, .form textarea {
+.form input,
+.form select,
+.form textarea {
   width: 100%;
   padding: 12px 15px;
   border-radius: 8px;
@@ -101,7 +107,7 @@
   align-items: center;
   padding: 40px;
   text-align: center;
-  background-color: #e9ecef;
+  background-color: #007bff;
 }
 
 /* Botões de navegação das etapas */
@@ -112,7 +118,9 @@
   margin-top: 1.5rem;
 }
 
-.prevButton, .nextButton, .submitButton {
+.prevButton,
+.nextButton,
+.submitButton {
   padding: 12px 25px;
   border-radius: 8px;
   border: none;
@@ -132,12 +140,12 @@
 }
 
 .submitButton {
-  background-color: #28a745; /* Verde para finalizar */
+  background-color: #28a745;
   color: #fff;
-  width: 100%;
+  width: 50%;
 }
 
-.stepNav > .nextButton:first-child {
+.stepNav>.nextButton:first-child {
   margin-left: auto;
 }
 
@@ -161,6 +169,7 @@
   justify-content: center;
   align-items: center;
   background-color: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 .formContainer {
@@ -183,12 +192,17 @@
   gap: 15px;
 }
 
-.formRow > input {
+.formRow>input {
   width: 100%;
 }
 
-.addressField { flex: 3; }
-.numberField { flex: 1; }
+.addressField {
+  flex: 3;
+}
+
+.numberField {
+  flex: 1;
+}
 
 /* Checklist de Senha */
 .passwordRequirements {
@@ -203,11 +217,13 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  color: #e74c3c; /* Vermelho por padrão */
+  color: #e74c3c;
+  /* Vermelho por padrão */
 }
 
 .requirement.valid {
-  color: #2ecc71; /* Verde quando válido */
+  color: #2ecc71;
+  /* Verde quando válido */
 }
 
 /* Mensagens de Erro */
@@ -278,7 +294,8 @@
 
 .passwordWrapper input {
   width: 100%;
-  padding-right: 40px; /* Espaço para o ícone do olho */
+  padding-right: 40px;
+  /* Espaço para o ícone do olho */
 }
 
 .eyeButton {
@@ -292,7 +309,6 @@
   display: flex;
   align-items: center;
 }
-
 
 .experienciasCheckboxes {
   display: grid;
@@ -322,3 +338,156 @@
 .checkboxItem input {
   margin: 0;
 }
+
+/* --- Estilos da Seção de Competências --- */
+.competencySection {
+  margin-top: 15px;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+.competencySection label {
+  font-weight: 500;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.competencyTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  min-height: 20px;
+}
+
+.competencyTag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #eaf3ff;
+  color: #0056b3;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.competencyTag button {
+  background: none;
+  border: none;
+  color: #0056b3;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.addCompetencyBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  background: none;
+  border: 1px solid #007bff;
+  color: #007bff;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.addCompetencyBtn:disabled {
+  border-color: #ccc;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.competencyHelpText {
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 5px;
+}
+
+/* --- Estilos do Modal de Competências --- */
+.modalContent {
+  text-align: left;
+}
+
+.modalSearchInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.competencyList {
+  list-style: none;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.competencyItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.addBtn,
+.removeBtn {
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.addBtn {
+  background-color: #eaf3ff;
+  color: #007bff;
+}
+
+.removeBtn {
+  background-color: #ffeaea;
+  color: #e74c3c;
+}
+
+.competencyTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  min-height: 20px;
+  max-height: 110px;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.competencyTag {
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 0.25rem 0.5rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.competencyTag button {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.competencyTag button:hover {
+  opacity: 0.8;
+}
+

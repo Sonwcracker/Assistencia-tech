@@ -84,7 +84,6 @@
 .popularList {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* De: repeat(auto-fit, minmax(200px, 1fr)); */
-  
   gap: 1.5rem;
   justify-items: center;
   list-style: none;
