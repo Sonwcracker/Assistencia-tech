@@ -4,14 +4,22 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import styles from './profile.module.css';
 import { db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  addDoc,
+  collection,
+  serverTimestamp,
+  query,
+  where,
+  getDocs,
+} from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
 import { IoArrowBackOutline, IoMailOutline, IoCallOutline, IoLocationOutline } from 'react-icons/io5';
 import { useAuth } from '@/context/AuthContext';
 import Modal from '@/components/Modal';
 
-// Interface para os dados do Freelancer
 interface Freelancer {
   nome: string;
   sobrenome: string;
@@ -32,6 +40,7 @@ export default function FreelancerProfilePage() {
   const [freelancerData, setFreelancerData] = useState<Freelancer | null>(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ motivo: '', endereco: '', data: '' });
 
   useEffect(() => {
     async function fetchFreelancer() {
@@ -39,9 +48,7 @@ export default function FreelancerProfilePage() {
         try {
           const docRef = doc(db, 'usuarios', freelancerId);
           const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setFreelancerData(docSnap.data() as Freelancer);
-          }
+          if (docSnap.exists()) setFreelancerData(docSnap.data() as Freelancer);
         } catch (error) {
           console.error("Erro ao buscar dados:", error);
         } finally {
@@ -52,10 +59,81 @@ export default function FreelancerProfilePage() {
     fetchFreelancer();
   }, [freelancerId]);
 
-  if (loading) {
-    return <div className={styles.profileContainer}>Carregando perfil...</div>;
-  }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
+  const handleSubmit = async () => {
+    if (!user) return;
+
+    try {
+      const q = query(
+        collection(db, 'solicitacoes'),
+        where('cliente_id', '==', user.uid),
+        where('tecnico_id', '==', freelancerId),
+        where('status', '==', 'aberto')
+      );
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        alert('Você já possui uma solicitação em aberto com este profissional. Finalize-a antes de enviar uma nova.');
+        return;
+      }
+
+      await addDoc(collection(db, 'solicitacoes'), {
+        cliente_id: user.uid,
+        tecnico_id: freelancerId,
+        nome: freelancerData?.nome,
+        email: freelancerData?.email,
+        profissao_solicitada: 'freelancer',
+        data_criacao: serverTimestamp(),
+        data_prevista: formData.data,
+        endereco: formData.endereco,
+        descricao: formData.motivo,
+        status: 'aberto',
+        profissional_id: '',
+        cep: '',
+      });
+
+      alert('Solicitação enviada com sucesso!');
+      setIsModalOpen(false);
+      setFormData({ motivo: '', endereco: '', data: '' });
+
+    } catch (error) {
+      console.error('Erro ao enviar solicitação:', error);
+      alert('Erro ao enviar solicitação.');
+    }
+  };
+
+  const handleContratarClick = async () => {
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+
+    try {
+      const q = query(
+        collection(db, 'solicitacoes'),
+        where('cliente_id', '==', user.uid),
+        where('tecnico_id', '==', freelancerId),
+        where('status', '==', 'aberto')
+      );
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        alert('Você já possui uma solicitação em aberto com este profissional. Finalize-a antes de enviar uma nova.');
+        return;
+      }
+
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error('Erro ao verificar solicitações:', error);
+      alert('Erro ao verificar solicitações.');
+    }
+  };
+
+  if (loading) return <div className={styles.profileContainer}>Carregando perfil...</div>;
   if (!freelancerData) {
     return (
       <div className={styles.notFound}>
@@ -65,21 +143,7 @@ export default function FreelancerProfilePage() {
     );
   }
 
-  const fotoValida = freelancerData.foto && (freelancerData.foto.startsWith('http') || freelancerData.foto.startsWith('/'));
-  const imagemSrc = fotoValida ? freelancerData.foto : '/images/placeholder.jpg';
-
-  const hasTelefone = freelancerData.telefone && freelancerData.telefone.trim() !== '';
-  const whatsappLink = hasTelefone 
-    ? `https://wa.me/${freelancerData.telefone.replace(/\D/g, '')}` 
-    : '';
-
-  const handleOrcamentoClick = () => {
-    if (user) {
-      window.open(whatsappLink, '_blank');
-    } else {
-      setIsModalOpen(true);
-    }
-  };
+  const imagemSrc = freelancerData.foto?.startsWith('http') ? freelancerData.foto : '/images/placeholder.jpg';
 
   return (
     <>
@@ -104,12 +168,11 @@ export default function FreelancerProfilePage() {
               <IoLocationOutline />
               <span>{freelancerData.endereco}</span>
             </div>
-            {hasTelefone && (
-              <button onClick={handleOrcamentoClick} className={styles.ctaButton}>
-                Solicitar Orçamento
-              </button>
-            )}
+            <button onClick={handleContratarClick} className={styles.ctaButton}>
+              Contratar
+            </button>
           </div>
+
           <div className={styles.rightColumn}>
             <h2>Sobre Mim</h2>
             <p className={styles.description}>{freelancerData.descricao || "Nenhuma descrição fornecida."}</p>
@@ -121,12 +184,10 @@ export default function FreelancerProfilePage() {
                 <IoMailOutline />
                 <a href={`mailto:${freelancerData.email}`}>{freelancerData.email}</a>
               </div>
-              {hasTelefone && (
-                <div className={styles.infoItem}>
-                  <IoCallOutline />
-                  <span>{freelancerData.telefone}</span>
-                </div>
-              )}
+              <div className={styles.infoItem}>
+                <IoCallOutline />
+                <span>{freelancerData.telefone}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -134,15 +195,22 @@ export default function FreelancerProfilePage() {
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <div className={styles.modalContent}>
-          <h2>Login Necessário</h2>
-          <p>Você precisa estar logado como cliente para solicitar um orçamento.</p>
+          <h2>Formulário de Contratação</h2>
+          <label>
+            Motivo:
+            <textarea name="motivo" value={formData.motivo} onChange={handleInputChange} />
+          </label>
+          <label>
+            Endereço:
+            <input type="text" name="endereco" value={formData.endereco} onChange={handleInputChange} />
+          </label>
+          <label>
+            Data disponível:
+            <input type="date" name="data" value={formData.data} onChange={handleInputChange} />
+          </label>
           <div className={styles.modalActions}>
-            <button onClick={() => setIsModalOpen(false)} className={styles.modalButtonCancel}>
-              Cancelar
-            </button>
-            <button onClick={() => router.push('/login')} className={styles.modalButtonConfirm}>
-              Fazer Login
-            </button>
+            <button className={styles.modalButtonCancel} onClick={() => setIsModalOpen(false)}>Cancelar</button>
+            <button className={styles.modalButtonConfirm} onClick={handleSubmit}>Enviar</button>
           </div>
         </div>
       </Modal>

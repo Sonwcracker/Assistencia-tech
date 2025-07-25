@@ -1,0 +1,112 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tituloPagina {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #1f1f1f;
+  text-align: center;
+}
+
+.listaSolicitacoes {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cardSolicitacao {
+  background-color: #ffffff;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  border-left: 5px solid #007bff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cardSolicitacao:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.cardSolicitacao p {
+  font-size: 1rem;
+  color: #333;
+  margin: 0;
+}
+
+.cardSolicitacao strong {
+  color: #222;
+}
+
+.statusAberto {
+  background-color: #e6f3ff;
+  color: #007bff;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+.statusFinalizado {
+  background-color: #eaf8ec;
+  color: #28a745;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.9rem;
+}
+
+.cardSolicitacao {
+  background-color: #ffffff;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  border-left: 6px solid #007bff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 1.5rem;
+}
+
+.statusAberto {
+  background-color: #e6f3ff;
+  color: #007bff;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.statusFinalizado {
+  background-color: #eaf8ec;
+  color: #28a745;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.btnCancelar {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.btnCancelar:hover {
+  background-color: #d9363e;
+}

@@ -296,23 +296,20 @@
 
 .experienciasCheckboxes {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
   margin-top: 1rem;
-  max-height: 200px; /* Limita a altura */
-  overflow-y: auto;
-  padding-right: 5px; /* para evitar corte do scroll */
 }
 
 .checkboxItem {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background-color: #f1f3f5;
   border: 1px solid #ccc;
-  padding: 6px 8px;
-  border-radius: 8px;
-  font-size: 0.8rem;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 0.9rem;
   transition: all 0.2s ease-in-out;
   cursor: pointer;
 }
@@ -325,4 +322,3 @@
 .checkboxItem input {
   margin: 0;
 }
-
