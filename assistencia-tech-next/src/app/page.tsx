@@ -4,13 +4,14 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './home.module.css';
+
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 interface Profissao {
   id: string;
   nome: string;
-  imagemUrl: string;
+  imagem: string; // Nome do campo no Firestore
 }
 
 const ITENS_POR_PAGINA = 3;
@@ -29,8 +30,9 @@ export default function HomePage() {
 
         const profissoesData = querySnapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
-        })) as Profissao[];
+          nome: doc.data().nome,
+          imagem: doc.data().imagem || '', // Se imagem não existir
+        }));
 
         setProfissoes(profissoesData);
       } catch (error) {
@@ -44,7 +46,7 @@ export default function HomePage() {
   }, []);
 
   const handleVerMais = () => {
-    setVisibleCount(prevCount => prevCount + ITENS_POR_PAGINA);
+    setVisibleCount(prev => prev + ITENS_POR_PAGINA);
   };
 
   const handleVerMenos = () => {
@@ -85,10 +87,11 @@ export default function HomePage() {
                       <div className={styles.popularCard}>
                         <figure className={styles.cardImg}>
                           <Image
-                            src={profissao.imagemUrl || '/images/placeholder.png'}
-                            alt={profissao.nome}
+                            src={profissao.imagem || '/images/placeholder.png'}
+                            alt={`Imagem da profissão ${profissao.nome}`}
                             width={200}
                             height={150}
+                            className={styles.image}
                           />
                         </figure>
                         <div className={styles.cardContent}>
