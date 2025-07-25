@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import ProfileMenu from './ProfileMenu';
 
 export default function Navbar() {
-  const { user, loading } = useAuth();
+  const { user, userData, loading } = useAuth();
   const pathname = usePathname();
   const isHomePage = pathname === '/';
 
@@ -38,12 +38,16 @@ export default function Navbar() {
     };
   }, [lastScrollY]);
 
-  // Lógica para construir a string de classes de forma segura
   const headerClassNames = [
     styles.header,
     isHomePage && isAtTop && styles.atTop,
     !isVisible && styles.hidden
   ].filter(Boolean).join(' ');
+
+  // A MUDANÇA ESTÁ AQUI
+  const isTecnico = userData?.tipo === 'tecnico';
+  const servicosLinkHref = isTecnico ? '/chamados' : '/servicos';
+  const servicosLinkText = isTecnico ? 'Chamados' : 'Serviços';
 
   return (
     <header className={headerClassNames}>
@@ -55,12 +59,18 @@ export default function Navbar() {
           <ul className={styles.navList}>
             <li><Link href="/" className={styles.navLink}>Início</Link></li>
             <li><Link href="/profissionais" className={styles.navLink}>Profissionais</Link></li>
-            <li><Link href="/servicos" className={styles.navLink}>Serviços</Link></li>
+
+            <li>
+              <Link href={servicosLinkHref} className={styles.navLink}>
+                {servicosLinkText}
+              </Link>
+            </li>
+
             <li><Link href="/assinatura" className={styles.navLink}>Assinatura</Link></li>
             <li><Link href="/sobre" className={styles.navLink}>Sobre</Link></li>
           </ul>
         </nav>
-        
+
         <div className={styles.actionsContainer}>
           {loading ? (
             <div className={styles.loader}></div>

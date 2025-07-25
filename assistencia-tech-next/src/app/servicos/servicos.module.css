@@ -171,3 +171,205 @@
   margin-top: 50px;
   color: #666;
 }
+
+.cardSolicitacao {
+    cursor: pointer;
+    /* Adicione outros estilos de hover se desejar */
+}
+
+.data {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 1rem;
+}
+
+/* Modal */
+.modalGrid {
+  display: flex;
+  gap: 2rem;
+  text-align: left;
+}
+.modalLeft {
+  flex-basis: 30%;
+  text-align: center;
+  border-right: 1px solid #eee;
+  padding-right: 2rem;
+}
+.modalLeft img { 
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+.modalLeft h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+.modalLeft h4 {
+  font-size: 1.2rem;
+}
+.modalLeft p {
+  color: #555;
+  text-transform: capitalize;
+}
+
+.modalRight {
+  flex-basis: 70%;
+}
+.modalRight h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+.modalRight p {
+  margin-bottom: 0.8rem;
+  color: #333;
+  line-height: 1.6;
+}
+.botoes {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+.btnCancelarModal {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #dc3545;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cardContent {
+  cursor: pointer;
+}
+
+.btnCancelarCard {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.btnCancelarCard:hover {
+  background-color: #d32f2f;
+}
+
+.successToast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4CAF50;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  z-index: 1001;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.modalLeft .profissao {
+  text-transform: capitalize;
+  color: #555;
+  font-weight: 500;
+}
+
+.professionalDetails {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.professionalDetails h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.professionalDetails p {
+  margin-bottom: 0.5rem;
+}
+
+.competencies {
+  margin-top: 0.5rem;
+}
+
+.competencies ul {
+  list-style: disc;
+  padding-left: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 15px;
+  margin-top: 8px;
+}
+
+.competencies li {
+  color: #333;
+}
+
+.professionalInfo {
+display: flex;
+flex-direction: column;
+align-items: center;
+text-align: center;
+margin-bottom: 1.5rem;
+}
+
+.professionalInfo .modalImage {
+border-radius: 50%;
+margin-bottom: 0.5rem;
+}
+
+.professionalInfo h4 {
+font-size: 1.2rem;
+margin-bottom: 0.2rem;
+}
+
+.professionalInfo .profissao {
+font-size: 0.9rem;
+color: #555;
+margin-bottom: 0.5rem;
+text-transform: capitalize;
+}
+
+.professionalInfo .email {
+font-size: 0.9rem;
+color: #777;
+}
+
+/* Estilos para as competências com scroll */
+.competencies {
+margin-top: 1.5rem;
+}
+
+.competencies strong {
+display: block;
+margin-bottom: 0.5rem;
+}
+
+.competenciesScroll {
+border: 1px solid #ccc;
+border-radius: 6px;
+padding: 0.5rem;
+height: 100px;
+overflow-y: auto; 
+display: flex;
+flex-wrap: wrap;
+gap: 0.5rem;
+}
+
+.competencyTag {
+background-color: #e9ecef;
+color: #333;
+border-radius: 4px;
+padding: 0.3rem 0.6rem;
+font-size: 0.85rem;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
