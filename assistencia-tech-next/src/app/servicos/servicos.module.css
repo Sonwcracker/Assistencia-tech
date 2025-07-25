@@ -110,3 +110,64 @@
 .btnCancelar:hover {
   background-color: #d9363e;
 }
+
+
+.gridSolicitacoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.respostaAceita {
+  color: green;
+  font-weight: bold;
+}
+
+.respostaRecusada {
+  color: red;
+  font-weight: bold;
+}
+
+.subtitulo {
+  margin-top: 40px;
+  font-size: 1.5rem;
+  color: #003366;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 6px;
+}
+
+.gridSolicitacoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.respostaAceita {
+  color: green;
+  font-weight: bold;
+}
+
+.respostaRecusada {
+  color: red;
+  font-weight: bold;
+}
+
+.gridLadoALado {
+  display: flex;
+  gap: 40px;
+  margin-top: 30px;
+  justify-content: space-between;
+}
+
+.coluna {
+  flex: 1;
+  min-width: 0;
+}
+
+.semSolicitacoes {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 50px;
+  color: #666;
+}
