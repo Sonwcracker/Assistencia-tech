@@ -20,6 +20,7 @@ import { IoArrowBackOutline, IoMailOutline, IoCallOutline, IoLocationOutline } f
 import { useAuth } from '@/context/AuthContext';
 import Modal from '@/components/Modal';
 
+// 1. INTERFACE ATUALIZADA
 interface Freelancer {
   nome: string;
   sobrenome: string;
@@ -27,6 +28,7 @@ interface Freelancer {
   telefone: string;
   endereco: string;
   descricao: string;
+  profissao: string; // <-- CAMPO ADICIONADO
   foto?: string;
   experiencias?: string;
 }
@@ -65,9 +67,10 @@ export default function FreelancerProfilePage() {
   };
 
   const handleSubmit = async () => {
-    if (!user) return;
+    if (!user || !freelancerData) return; // Garante que freelancerData não é nulo
 
     try {
+      // Verifica se já existe uma solicitação aberta
       const q = query(
         collection(db, 'solicitacoes'),
         where('cliente_id', '==', user.uid),
@@ -81,17 +84,19 @@ export default function FreelancerProfilePage() {
         return;
       }
 
+      // 2. CRIAÇÃO DO CHAMADO CORRIGIDA
       await addDoc(collection(db, 'solicitacoes'), {
         cliente_id: user.uid,
         tecnico_id: freelancerId,
-        nome: freelancerData?.nome,
-        email: freelancerData?.email,
-        profissao_solicitada: 'freelancer',
+        nome: freelancerData.nome, // Usando os dados do perfil
+        email: freelancerData.email,
+        profissao_solicitada: freelancerData.profissao, // <-- CORREÇÃO PRINCIPAL
         data_criacao: serverTimestamp(),
         data_prevista: formData.data,
         endereco: formData.endereco,
         descricao: formData.motivo,
         status: 'aberto',
+        // Os campos abaixo podem precisar de revisão futura, mas não causam o bug atual
         profissional_id: '',
         cep: '',
       });
@@ -111,7 +116,8 @@ export default function FreelancerProfilePage() {
       router.push('/login');
       return;
     }
-
+    // A lógica de verificação antes de abrir o modal é boa.
+    // O código aqui já está correto.
     try {
       const q = query(
         collection(db, 'solicitacoes'),
