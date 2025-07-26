@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import styles from './chamado.module.css'; // Crie um arquivo CSS com este nome
+import styles from './chamado.module.css';
 import { collection, getDocs, doc, getDoc, query, where, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
@@ -10,7 +10,7 @@ import Image from 'next/image';
 import { Solicitacao, UserData } from '@/types'; // Suas definições de tipos
 
 export default function NovosChamadosPage() {
-  const { user, userData } = useAuth();
+  const { user, userData } = useAuth(); // 'user' contém o uid, 'userData' contém os dados do perfil
   const [chamadosDisponiveis, setChamadosDisponiveis] = useState<Solicitacao[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedChamado, setSelectedChamado] = useState<Solicitacao | null>(null);
@@ -18,21 +18,23 @@ export default function NovosChamadosPage() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   useEffect(() => {
-    // 1. BUSCA AUTOMÁTICA DE CHAMADOS QUANDO O TÉCNICO LOGA
-    if (userData?.tipo === 'tecnico' && userData.profissao) {
+    // Busca os chamados direcionados a este técnico específico
+    if (user && userData?.tipo === 'tecnico') {
       const fetchChamados = async () => {
         setLoading(true);
         try {
-          // A consulta busca apenas chamados para a profissão do técnico e com status "aberto"
+          // LÓGICA CORRIGIDA:
+          // A consulta busca chamados onde o 'tecnico_id' no documento da solicitação
+          // é exatamente igual ao 'uid' do usuário técnico que está logado.
           const q = query(
             collection(db, 'solicitacoes'),
-            where('profissao_solicitada', '==', userData.profissao),
-            where('status', '==', 'aberto')
+            where('tecnico_id', '==', user.uid), // <-- Consulta por ID do técnico
+            where('status', '==', 'aberto')      // <-- E o status está 'aberto'
           );
           
           const snapshot = await getDocs(q);
 
-          // Mapeia os resultados para um formato amigável, buscando o nome do cliente
+          // O restante do processo para buscar os dados do cliente continua o mesmo
           const chamadosDataPromises = snapshot.docs.map(async (docSnap) => {
             const data = docSnap.data();
             const clienteRef = doc(db, 'usuarios', data.cliente_id);
@@ -57,35 +59,38 @@ export default function NovosChamadosPage() {
         }
       };
       fetchChamados();
-    } else if (userData) {
+    } else {
+      // Se não for um técnico ou não estiver logado, zera a lista e para o loading
       setLoading(false);
       setChamadosDisponiveis([]);
     }
-  }, [userData]);
+  }, [user, userData]); // Depende de 'user' e 'userData' para re-executar
 
-  // 3. FUNÇÃO PARA ABRIR O MODAL COM DETALHES
+  // Função para abrir o modal com detalhes
   const openDetailModal = async (chamado: Solicitacao) => {
     setSelectedChamado(chamado);
-    setLoading(true);
     // Busca os dados completos do cliente para exibir no modal
-    const clienteRef = doc(db, 'usuarios', chamado.cliente_id);
-    const clienteSnap = await getDoc(clienteRef);
-    if (clienteSnap.exists()) {
-      setClienteChamado(clienteSnap.data() as UserData);
+    if (chamado.cliente_id) {
+        setLoading(true);
+        const clienteRef = doc(db, 'usuarios', chamado.cliente_id);
+        const clienteSnap = await getDoc(clienteRef);
+        if (clienteSnap.exists()) {
+            setClienteChamado(clienteSnap.data() as UserData);
+        }
+        setLoading(false);
     }
-    setLoading(false);
     setIsDetailModalOpen(true);
   };
 
-  // 4. FUNÇÃO PARA ACEITAR OU RECUSAR O CHAMADO
+  // Função para aceitar ou recusar o chamado
   const handleResponse = async (resposta: 'aceito_tecnico' | 'recusado_tecnico') => {
     if (!selectedChamado || !user) return;
     try {
       const ref = doc(db, 'solicitacoes', selectedChamado.id);
-      // Atualiza o status do chamado no banco de dados e atribui o ID do técnico
+      // Atualiza o status do chamado no banco de dados.
+      // O ID do técnico já está no chamado, mas podemos confirmar se quisermos.
       await updateDoc(ref, {
         status: resposta,
-        tecnico_id: user.uid,
       });
       // Remove o chamado da lista na tela, pois ele não está mais "em aberto"
       setChamadosDisponiveis(prev => prev.filter(c => c.id !== selectedChamado.id));
@@ -96,23 +101,23 @@ export default function NovosChamadosPage() {
     }
   };
 
-  if (loading && chamadosDisponiveis.length === 0) return <p>Carregando...</p>;
+  if (loading && chamadosDisponiveis.length === 0) return <p>Carregando seus chamados...</p>;
 
   return (
     <>
       <div className={styles.container}>
         <h1>Novos Chamados</h1>
-        <p>Estes são os chamados disponíveis na sua área de atuação.</p>
+        <p>Estes são os chamados direcionados a você que aguardam uma resposta.</p>
         
-        {/* 2. ÁREA ONDE OS CARDS DOS CHAMADOS SÃO EXIBIDOS */}
         <div className={styles.gridChamados}>
           {chamadosDisponiveis.length > 0 ? (
             chamadosDisponiveis.map(c => (
               // Cada card é clicável para abrir o modal de detalhes
               <div key={c.id} className={styles.card} onClick={() => openDetailModal(c)}>
-                <h3>{c.nomeCliente}</h3>
+                <h3>Cliente: {c.nomeCliente}</h3>
+                <p><strong>Serviço:</strong> {c.profissao_solicitada}</p>
                 <p>{c.descricao.substring(0, 100)}...</p>
-                <span>{c.data_criacao.toLocaleDateString('pt-BR')}</span>
+                <span>Aberto em: {c.data_criacao.toLocaleDateString('pt-BR')}</span>
               </div>
             ))
           ) : (
@@ -121,7 +126,6 @@ export default function NovosChamadosPage() {
         </div>
       </div>
 
-      {/* 5. MODAL DE DETALHES COM OS BOTÕES DE AÇÃO */}
       <Modal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)}>
         {loading && <p>Carregando detalhes...</p>}
         {!loading && selectedChamado && clienteChamado && (
@@ -136,7 +140,7 @@ export default function NovosChamadosPage() {
               <p className={styles.modalDescription}>{selectedChamado.descricao}</p>
               <span className={styles.modalDate}>Solicitado em: {selectedChamado.data_criacao.toLocaleDateString('pt-BR')}</span>
               <div className={styles.botoes}>
-                <button onClick={() => handleResponse('recusado_tecnico')} className={styles.recusar}>Não me interessa</button>
+                <button onClick={() => handleResponse('recusado_tecnico')} className={styles.recusar}>Recusar</button>
                 <button onClick={() => handleResponse('aceito_tecnico')} className={styles.aceitar}>Aceitar Chamado</button>
               </div>
             </div>
