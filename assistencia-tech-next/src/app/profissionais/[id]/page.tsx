@@ -200,26 +200,36 @@ export default function FreelancerProfilePage() {
       </div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div className={styles.modalContent}>
-          <h2>Formulário de Contratação</h2>
-          <label>
-            Motivo:
-            <textarea name="motivo" value={formData.motivo} onChange={handleInputChange} />
-          </label>
-          <label>
-            Endereço:
-            <input type="text" name="endereco" value={formData.endereco} onChange={handleInputChange} />
-          </label>
-          <label>
-            Data disponível:
-            <input type="date" name="data" value={formData.data} onChange={handleInputChange} />
-          </label>
-          <div className={styles.modalActions}>
-            <button className={styles.modalButtonCancel} onClick={() => setIsModalOpen(false)}>Cancelar</button>
-            <button className={styles.modalButtonConfirm} onClick={handleSubmit}>Enviar</button>
-          </div>
-        </div>
-      </Modal>
+  <div className={styles.modalContent}>
+    <h2>Formulário de Contratação</h2>
+
+    <label>
+      Título:
+      <input type="text" name="titulo" value={formData.titulo} onChange={handleInputChange} />
+    </label>
+
+    <label>
+      Motivo:
+      <textarea name="motivo" value={formData.motivo} onChange={handleInputChange} />
+    </label>
+
+    <label>
+      Endereço:
+      <input type="text" name="endereco" value={formData.endereco} onChange={handleInputChange} />
+    </label>
+
+    <label>
+      Data disponível:
+      <input type="date" name="data" value={formData.data} onChange={handleInputChange} />
+    </label>
+
+    <div className={styles.modalActions}>
+      <button className={styles.modalButtonCancel} onClick={() => setIsModalOpen(false)}>Cancelar</button>
+      <button className={styles.modalButtonConfirm} onClick={handleSubmit}>Enviar</button>
+    </div>
+  </div>
+</Modal>
+
     </>
   );
 }
