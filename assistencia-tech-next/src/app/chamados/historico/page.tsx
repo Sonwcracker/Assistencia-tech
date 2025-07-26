@@ -6,7 +6,7 @@ import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { Solicitacao } from '@/types';
 
-type StatusFiltro = 'todos' | 'aceito_tecnico' | 'recusado_tecnico' | 'cancelado' | 'finalizado';
+type StatusFiltro = 'todos' | 'aceito' | 'recusado_tecnico' | 'cancelado';
 
 export default function HistoricoPage() {
   const { user } = useAuth();
@@ -26,14 +26,14 @@ export default function HistoricoPage() {
         where('status', 'in', ['aceito_tecnico', 'recusado_tecnico', 'finalizado', 'cancelado']),
         orderBy('data_criacao', 'desc')
       );
-      
+
       const snapshot = await getDocs(q);
       const chamadosDataPromises = snapshot.docs.map(async (docSnap) => {
         const data = docSnap.data();
         const clienteRef = doc(db, 'usuarios', data.cliente_id);
         const clienteSnap = await getDoc(clienteRef);
         const nomeCliente = clienteSnap.exists() ? clienteSnap.data().nome : 'Cliente';
-        
+
         return {
           id: docSnap.id,
           nomeCliente,
@@ -54,12 +54,14 @@ export default function HistoricoPage() {
   useEffect(() => {
     if (filtroAtivo === 'todos') {
       setChamadosFiltrados(todosChamados);
+    } else if (filtroAtivo === 'aceito') {
+      const aceitos = todosChamados.filter(c => c.status === 'aceito_tecnico' || c.status === 'finalizado');
+      setChamadosFiltrados(aceitos);
     } else {
-      const filtered = todosChamados.filter(c => c.status === filtroAtivo);
-      setChamadosFiltrados(filtered);
+      const filtrados = todosChamados.filter(c => c.status === filtroAtivo);
+      setChamadosFiltrados(filtrados);
     }
   }, [filtroAtivo, todosChamados]);
-
 
   const getStatusClass = (status: string) => {
     switch (status) {
@@ -75,6 +77,14 @@ export default function HistoricoPage() {
     }
   };
 
+  const formatarStatus = (status: string) => {
+    if (status === 'aceito_tecnico') return 'Aceito';
+    if (status === 'finalizado') return 'Finalizado';
+    if (status === 'recusado_tecnico') return 'Recusado';
+    if (status === 'cancelado') return 'Cancelado';
+    return status;
+  };
+
   if (loading) return <p>Carregando histórico...</p>;
 
   return (
@@ -84,7 +94,7 @@ export default function HistoricoPage() {
 
       <div className={styles.filterTabs}>
         <button onClick={() => setFiltroAtivo('todos')} className={filtroAtivo === 'todos' ? styles.activeTab : ''}>Todos</button>
-        <button onClick={() => setFiltroAtivo('aceito_tecnico')} className={filtroAtivo === 'aceito_tecnico' ? styles.activeTab : ''}>Aceitos</button>
+        <button onClick={() => setFiltroAtivo('aceito')} className={filtroAtivo === 'aceito' ? styles.activeTab : ''}>Aceitos</button>
         <button onClick={() => setFiltroAtivo('recusado_tecnico')} className={filtroAtivo === 'recusado_tecnico' ? styles.activeTab : ''}>Recusados</button>
         <button onClick={() => setFiltroAtivo('cancelado')} className={filtroAtivo === 'cancelado' ? styles.activeTab : ''}>Cancelados</button>
       </div>
@@ -99,7 +109,7 @@ export default function HistoricoPage() {
                 <p className={styles.itemDescription}>{c.descricao}</p>
               </div>
               <div className={`${styles.itemStatus} ${getStatusClass(c.status)}`}>
-                {c.status.replace('_tecnico', '').replace('_', ' ')}
+                {formatarStatus(c.status)}
               </div>
             </div>
           ))

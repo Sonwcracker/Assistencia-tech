@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -17,17 +18,24 @@ interface NavItem {
 
 export default function ChamadosLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const [newChamadosCount, setNewChamadosCount] = useState(0);
 
   useEffect(() => {
-    if (!user) return;
-    const q = query(collection(db, 'solicitacoes'), where('status', '==', 'aberto'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      setNewChamadosCount(querySnapshot.size);
+    if (!user || !userData?.profissao) return;
+
+    const q = query(
+      collection(db, 'solicitacoes'),
+      where('status', '==', 'aberto'),
+      where('profissao_solicitada', '==', userData.profissao)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setNewChamadosCount(snapshot.size);
     });
+
     return () => unsubscribe();
-  }, [user]);
+  }, [user, userData]);
 
   const navItems: NavItem[] = [
     { href: '/chamados', label: 'Novos Chamados', icon: <IoListOutline />, count: newChamadosCount },
@@ -40,20 +48,24 @@ export default function ChamadosLayout({ children }: { children: React.ReactNode
       <aside className={styles.sidebar}>
         <h2 className={styles.sidebarTitle}>Painel do Técnico</h2>
         <nav className={styles.nav}>
-          {navItems.map(item => (
-            <Link key={item.href} href={item.href} className={`${styles.navItem} ${pathname === item.href ? styles.active : ''}`}>
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`${styles.navItem} ${pathname === item.href ? styles.active : ''}`}
+            >
               <div className={styles.navItemContent}>
                 {item.icon}
                 <span>{item.label}</span>
               </div>
-              {item.count > 0 && <span className={styles.notificationBadge}>{item.count}</span>}
+              {item.count && item.count > 0 && (
+                <span className={styles.notificationBadge}>{item.count}</span>
+              )}
             </Link>
           ))}
         </nav>
       </aside>
-      <main className={styles.mainContent}>
-        {children}
-      </main>
+      <main className={styles.mainContent}>{children}</main>
     </div>
   );
 }

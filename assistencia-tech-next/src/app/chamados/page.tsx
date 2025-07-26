@@ -84,9 +84,10 @@ export default function NovosChamadosPage() {
       const ref = doc(db, 'solicitacoes', selectedChamado.id);
       // Atualiza o status do chamado no banco de dados e atribui o ID do técnico
       await updateDoc(ref, {
-        status: resposta,
-        tecnico_id: user.uid,
-      });
+      status: resposta === 'aceito_tecnico' ? 'em_andamento' : resposta,
+      tecnico_id: user.uid,
+    });
+
       // Remove o chamado da lista na tela, pois ele não está mais "em aberto"
       setChamadosDisponiveis(prev => prev.filter(c => c.id !== selectedChamado.id));
       setIsDetailModalOpen(false);

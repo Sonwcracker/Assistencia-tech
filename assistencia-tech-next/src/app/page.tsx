@@ -11,7 +11,7 @@ import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 interface Profissao {
   id: string;
   nome: string;
-  imagem: string; // Nome do campo no Firestore
+  imagem: string;
 }
 
 const ITENS_POR_PAGINA = 3;
@@ -31,7 +31,7 @@ export default function HomePage() {
         const profissoesData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           nome: doc.data().nome,
-          imagem: doc.data().imagem || '', // Se imagem não existir
+          imagem: doc.data().imagem || '',
         }));
 
         setProfissoes(profissoesData);
@@ -59,14 +59,15 @@ export default function HomePage() {
     <main className={styles.mainContent}>
       <section className={styles.hero}>
         <div className={styles.container}>
-          <h2 className={styles.heroTitle}>contrate melhores serviços</h2>
+          <h2 className={styles.heroTitle}>Contrate os melhores serviços</h2>
           <p className={styles.heroText}>
-            Nossa empresa nasce com o propósito de ser a ponte entre profissionais e clientes,
-            oferecendo uma plataforma eficiente, segura e acessível para a contratação de serviços gerais.
+            Nossa plataforma conecta profissionais de diversas áreas com clientes que precisam de soluções rápidas,
+            acessíveis e confiáveis para o dia a dia.
           </p>
           <div className="btn-group">
-           <Link href="/sobre" className={styles.navLink}>
-            <button className={`${styles.btn} ${styles.btnPrimary}`}>Saber mais</button></Link>
+            <Link href="/sobre" className={styles.navLink}>
+              <button className={`${styles.btn} ${styles.btnPrimary}`}>Saber mais</button>
+            </Link>
           </div>
         </div>
       </section>
@@ -119,6 +120,43 @@ export default function HomePage() {
               </div>
             </>
           )}
+        </div>
+      </section>
+
+      {/* NOVA SEÇÃO DE VANTAGENS */}
+      <section className={styles.vantagensSection}>
+        <div className={styles.container}>
+          <h2 className={styles.sectionTitle}>Por que escolher nossa plataforma?</h2>
+          <p className={styles.sectionText}>
+            Veja os principais benefícios que fazem do nosso site a melhor escolha para contratar ou oferecer serviços.
+          </p>
+
+          <div className={styles.vantagensGrid}>
+            <div className={styles.vantagemItem}>
+              <h3>🔒 Segurança</h3>
+              <p>Contamos com autenticação segura e verificação de profissionais cadastrados.</p>
+            </div>
+            <div className={styles.vantagemItem}>
+              <h3>📱 Facilidade</h3>
+              <p>Encontre profissionais e serviços em poucos cliques, com acesso simples e rápido.</p>
+            </div>
+            <div className={styles.vantagemItem}>
+              <h3>🌎 Alcance Local</h3>
+              <p>Conectamos você com profissionais próximos, otimizando tempo e deslocamento.</p>
+            </div>
+            <div className={styles.vantagemItem}>
+              <h3>💬 Avaliações reais</h3>
+              <p>Leia opiniões de outros clientes para escolher com confiança e transparência.</p>
+            </div>
+            <div className={styles.vantagemItem}>
+              <h3>📈 Oportunidade para profissionais</h3>
+              <p>Divulgue seus serviços, ganhe visibilidade e conquiste novos clientes.</p>
+            </div>
+            <div className={styles.vantagemItem}>
+              <h3>⚙️ Gestão de serviços</h3>
+              <p>Organize seus pedidos, receba notificações e acompanhe tudo pela plataforma.</p>
+            </div>
+          </div>
         </div>
       </section>
     </main>

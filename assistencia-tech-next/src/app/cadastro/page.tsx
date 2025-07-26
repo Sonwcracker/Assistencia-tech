@@ -65,32 +65,57 @@ const Step2_ContactAddress = ({ formData, handleInputChange, errors }: any) => (
         </div>
     </>
 );
-const Step3_Professional = ({ formData, handleInputChange, onAddCompetencyClick, onRemoveCompetency, profissoes }: any) => (
-    <>
-        <select name="profissao" value={formData.profissao || ''} onChange={handleInputChange} required>
-            <option value="">Sua principal profissão</option>
-            {profissoes.map((prof: ProfissaoOption) => (
-                <option key={prof.id} value={prof.id}>{prof.nome}</option>
-            ))}
-        </select>
-        <textarea name="descricao" placeholder="Conte um pouco sobre você..." value={formData.descricao || ''} onChange={handleInputChange} required rows={4} />
-        <div className={styles.competencySection}>
-            <label>Competências</label>
-            <div className={styles.competencyTags}>
-                {formData.competencias?.map((comp: string) => (
-                    <div key={comp} className={styles.competencyTag}>
-                        <span>{comp}</span>
-                        <button type="button" onClick={() => onRemoveCompetency(comp)}>×</button>
-                    </div>
-                ))}
-            </div>
-            <button type="button" onClick={onAddCompetencyClick} className={styles.addCompetencyBtn} disabled={!formData.profissao}>
-                <IoAddCircleOutline />
-                Adicionar Competências
-            </button>
-            {!formData.profissao && <p className={styles.competencyHelpText}>Selecione uma profissão para ver as competências.</p>}
-        </div>
-    </>
+
+const Step3_Professional = ({ formData, handleInputChange, experiencias, setFormData }) => (
+  <>
+    <select name="profissao" value={formData.profissao} onChange={handleInputChange} required>
+      <option value="">Sua principal profissão</option>
+      <option value="eletricista">Eletricista</option>
+      <option value="encanador">Encanador</option>
+      <option value="montador-de-moveis">Montador de Móveis</option>
+      <option value="diarista">Diarista</option>
+      <option value="babá">Babá</option>
+      <option value="cuidador">Cuidador</option>
+      <option value="marceneiro">Marceneiro</option>
+      <option value="pedreiro">Pedreiro</option>
+      <option value="pintor">Pintor</option>
+    </select>
+
+    <textarea
+      name="descricao"
+      placeholder="Conte um pouco sobre você..."
+      value={formData.descricao}
+      onChange={handleInputChange}
+      required
+      rows={4}
+    />
+
+    {experiencias.length > 0 && (
+      <div className={styles.checkboxGroup}>
+        <p>Selecione suas experiências:</p>
+        {experiencias.map((exp, idx) => (
+          <label key={idx} className={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              value={exp}
+              checked={formData.experiencias?.includes(exp)}
+              onChange={(e) => {
+                const checked = e.target.checked;
+                const value = e.target.value;
+                setFormData((prev) => ({
+                  ...prev,
+                  experiencias: checked
+                    ? [...(prev.experiencias || []), value]
+                    : (prev.experiencias || []).filter((item) => item !== value),
+                }));
+              }}
+            />
+            {exp}
+          </label>
+        ))}
+      </div>
+    )}
+  </>
 );
 
 // --- COMPONENTE DO FORMULÁRIO DE ETAPAS ---
@@ -111,23 +136,8 @@ const FormWizard = ({ userType, onRegister }: { userType: 'cliente' | 'tecnico',
     const [loadingCompetencies, setLoadingCompetencies] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
-    useEffect(() => {
-        const fetchProfessions = async () => {
-            try {
-                const professionsCollection = collection(db, 'profissoes');
-                const q = query(professionsCollection, orderBy('nome'));
-                const querySnapshot = await getDocs(q);
-                const professions = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    nome: doc.data().nome 
-                })) as ProfissaoOption[];
-                setProfissoesList(professions);
-            } catch (error) {
-                console.error("Erro ao buscar a lista de profissões:", error);
-            }
-        };
-        fetchProfessions();
-    }, []);
+
+// --- FORMULÁRIOS PRINCIPAIS ---
 
     useEffect(() => {
         if (formData.profissao) {
@@ -198,71 +208,118 @@ const FormWizard = ({ userType, onRegister }: { userType: 'cliente' | 'tecnico',
         }
     };
 
-    return (
-        <>
-            <div className={styles.formContainer}>
-                <h2>{userType === 'cliente' ? 'Criar Conta de Cliente' : 'Seja um Profissional'} <span className={styles.stepIndicator}>(Etapa {step} de {totalSteps})</span></h2>
-                <ProgressBar currentStep={step} totalSteps={totalSteps} />
-                <form onSubmit={handleSubmit} className={styles.form}>
-                    {step === 1 &&
-                        <Step1_Personal {...{ formData, handleInputChange, passwordValidation, showPassword, toggleShowPassword }} />
-                    }
-                    {step === 2 &&
-                        <Step2_ContactAddress {...{ formData, handleInputChange, errors }} />
-                    }
-                    {step === 3 && userType === 'tecnico' &&
-                        <Step3_Professional
-                            formData={formData}
-                            handleInputChange={handleInputChange}
-                            onAddCompetencyClick={() => setIsCompetencyModalOpen(true)}
-                            onRemoveCompetency={handleCompetencyToggle}
-                            profissoes={profissoesList}
-                        />
-                    }
-                    <div className={styles.stepNav}>
-                        {step > 1 && <button type="button" onClick={prevStep} className={styles.prevButton}>Anterior</button>}
-                        {step < totalSteps && <button type="button" onClick={nextStep} className={styles.nextButton} disabled={!isStepValid()}>Próximo</button>}
-                        {step === totalSteps && <button type="submit" className={styles.submitButton}>Finalizar Cadastro</button>}
-                    </div>
-                </form>
-            </div>
-            <Modal isOpen={isCompetencyModalOpen} onClose={() => setIsCompetencyModalOpen(false)}>
-                <div className={styles.modalContent}>
-                    <h2 className={styles.modalTitle}>Adicionar Competências</h2>
-                    <input
-                        type="text"
-                        placeholder="Pesquisar competência..."
-                        className={styles.modalSearchInput}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <ul className={styles.competencyList}>
-                        {loadingCompetencies ? (
-                            <p>Carregando...</p>
-                        ) : filteredCompetencies.length > 0 ? (
-                            filteredCompetencies.map(comp => (
-                                <li key={comp} className={styles.competencyItem}>
-                                    <span>{comp}</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => handleCompetencyToggle(comp)}
-                                        className={formData.competencias?.includes(comp) ? styles.removeBtn : styles.addBtn}
-                                    >
-                                        {formData.competencias?.includes(comp) ? 'Remover' : 'Adicionar'}
-                                    </button>
-                                </li>
-                            ))
-                        ) : (
-                            <p>Nenhuma competência encontrada para esta profissão.</p>
-                        )}
-                    </ul>
-                    <div className={styles.modalActions}>
-                        <button onClick={() => setIsCompetencyModalOpen(false)} className={styles.saveButton}>Fechar</button>
-                    </div>
-                </div>
-            </Modal>
-        </>
-    );
+  return (
+    <div className={styles.formContainer}>
+      <h2>Criar Conta de Cliente <span className={styles.stepIndicator}>(Etapa {step} de 2)</span></h2>
+      <ProgressBar currentStep={step} totalSteps={2} />
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <div style={{ display: step === 1 ? 'flex' : 'none', flexDirection: 'column', gap: '15px' }}>
+          <Step1_Personal {...{ formData, handleInputChange, passwordValidation, showPassword, toggleShowPassword }} />
+
+        </div>
+        <div style={{ display: step === 2 ? 'flex' : 'none', flexDirection: 'column', gap: '15px' }}>
+          <Step2_ContactAddress {...{ formData, handleInputChange, errors }} />
+        </div>
+        <div className={styles.stepNav}>
+          {step > 1 && <button type="button" onClick={prevStep} className={styles.prevButton}>Anterior</button>}
+          {step < 2 && <button type="button" onClick={nextStep} className={styles.nextButton} disabled={!isStepValid()}>Próximo</button>}
+          {step === 2 && <button type="submit" className={styles.submitButton}>Finalizar Cadastro</button>}
+        </div>
+      </form>
+    </div>
+  );
+};
+
+const FreelancerForm = ({ onRegister }) => {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState<Partial<FormData>>({
+    nome: '', sobrenome: '', email: '', senha: '', confirmSenha: '', foto: null,
+    cpf: '', telefone: '', cep: '', endereco: '', numero: '',
+    profissao: '', descricao: '', experiencias: ''
+  });
+  const [errors, setErrors] = useState({ cpf: '', telefone: '' });
+  const [passwordValidation, setPasswordValidation] = useState({
+    length: false, uppercase: false, lowercase: false, number: false
+  });
+  const [previewFoto, setPreviewFoto] = useState('');
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+
+    if (name === 'senha') {
+        setPasswordValidation({
+            length: value.length >= 8,
+            uppercase: /[A-Z]/.test(value),
+            lowercase: /[a-z]/.test(value),
+            number: /[0-9]/.test(value),
+        });
+    }
+    if (name === 'cpf') {
+        if (!validateCPF(value)) setErrors(prev => ({ ...prev, cpf: 'CPF inválido.' }));
+        else setErrors(prev => ({ ...prev, cpf: '' }));
+    }
+    if (name === 'telefone') {
+        if (!/^55\d{10,11}$/.test(value)) setErrors(prev => ({ ...prev, telefone: 'Formato inválido. Use 55+DDD+Número.' }));
+        else setErrors(prev => ({ ...prev, telefone: '' }));
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, foto: file }));
+      setPreviewFoto(URL.createObjectURL(file));
+    }
+  };
+
+  const isStepValid = () => {
+    if (step === 1) {
+      // MUDANÇA AQUI: A foto (!!formData.foto) foi removida da validação obrigatória
+      return Object.values(passwordValidation).every(Boolean) && formData.senha === formData.confirmSenha;
+    }
+    if (step === 2) {
+      return validateCPF(formData.cpf) && /^55\d{10,11}$/.test(formData.telefone) && formData.endereco.trim() !== '' && formData.numero.trim() !== '';
+    }
+    if (step === 3) {
+      return formData.profissao && formData.descricao.trim() !== '';
+    }
+    return true;
+  };
+  
+  const nextStep = () => { if (isStepValid()) setStep(step + 1); };
+  const prevStep = () => setStep(step - 1);
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isStepValid()) {
+      onRegister('tecnico', formData);
+    }
+  };
+
+  return (
+    <div className={styles.formContainer}>
+      <h2>Seja um Profissional <span className={styles.stepIndicator}>(Etapa {step} de 3)</span></h2>
+      <ProgressBar currentStep={step} totalSteps={3} />
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <div style={{ display: step === 1 ? 'flex' : 'none', flexDirection: 'column', gap: '15px' }}>
+          <Step1_Personal {...{ formData, handleInputChange, handleFileChange, previewFoto, passwordValidation }} />
+        </div>
+        <div style={{ display: step === 2 ? 'flex' : 'none', flexDirection: 'column', gap: '15px' }}>
+          <Step2_ContactAddress {...{ formData, handleInputChange, errors }} />
+        </div>
+        <div style={{ display: step === 3 ? 'flex' : 'none', flexDirection: 'column', gap: '15px' }}>
+          <Step3_Professional {...{ formData, handleInputChange, experiencias, setFormData }} />
+
+        </div>
+        <div className={styles.stepNav}>
+          {step > 1 && <button type="button" onClick={prevStep} className={styles.prevButton}>Anterior</button>}
+          {step < 3 && <button type="button" onClick={nextStep} className={styles.nextButton} disabled={!isStepValid()}>Próximo</button>}
+          {step === 3 && <button type="submit" className={styles.submitButton}>Finalizar Cadastro</button>}
+        </div>
+      </form>
+    </div>
+  );
 };
 
 

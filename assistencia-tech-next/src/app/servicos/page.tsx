@@ -184,8 +184,8 @@ export default function MinhasSolicitacoesPage() {
             <div className={styles.competencies}>
               <strong>Competências:</strong>
               <div className={styles.competenciesScroll}>
-                {Array.isArray(profissionalData.competencias) && profissionalData.competencias.length > 0 ? (
-                  profissionalData.competencias.map((comp, index) => (
+                {Array.isArray(profissionalData.experiencias) && profissionalData.experiencias.length > 0 ? (
+                  profissionalData.experiencias.map((comp, index) => (
                     <span key={index} className={styles.competencyTag}>{comp}</span>
                   ))
                 ) : (

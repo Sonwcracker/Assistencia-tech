@@ -9,7 +9,7 @@ export interface UserData {
   foto?: string;
   profissao?: string;
   descricao?: string;
-  experiencias?: string;
+ experiencias?: string[]; // ← alterado para array
 }
 
 export interface Solicitacao {
