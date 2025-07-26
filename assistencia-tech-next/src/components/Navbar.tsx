@@ -20,22 +20,18 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      setIsAtTop(currentScrollY === 0);
+      setIsAtTop(currentScrollY < 50);
 
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setIsVisible(false);
       } else {
         setIsVisible(true);
       }
-
       setLastScrollY(currentScrollY);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
   const headerClassNames = [
@@ -44,33 +40,42 @@ export default function Navbar() {
     !isVisible && styles.hidden
   ].filter(Boolean).join(' ');
 
-  // A MUDANÇA ESTÁ AQUI
   const isTecnico = userData?.tipo === 'tecnico';
   const servicosLinkHref = isTecnico ? '/chamados' : '/servicos';
   const servicosLinkText = isTecnico ? 'Chamados' : 'Serviços';
+  
+  // Lógica para escolher a imagem e a classe
+  const showWhiteLogo = isHomePage && isAtTop;
+  const logoSrc = showWhiteLogo ? '/logoBranca.png' : '/logoAzul.png';
+  const logoClass = showWhiteLogo ? styles.logoImageAtTop : styles.logoImageDefault;
 
   return (
     <header className={headerClassNames}>
       <div className={styles.container}>
         <Link href="/" className={styles.brand}>
-          Servify
+          <Image
+            src={logoSrc}
+            alt="Logo da Servify"
+            width={500} 
+            height={500} 
+            className={logoClass} // Usa a classe dinâmica
+            priority
+          />
         </Link>
         <nav className={styles.nav}>
           <ul className={styles.navList}>
             <li><Link href="/" className={styles.navLink}>Início</Link></li>
             <li><Link href="/profissionais" className={styles.navLink}>Profissionais</Link></li>
-
             <li>
               <Link href={servicosLinkHref} className={styles.navLink}>
                 {servicosLinkText}
               </Link>
             </li>
-
             <li><Link href="/assinatura" className={styles.navLink}>Assinatura</Link></li>
             <li><Link href="/sobre" className={styles.navLink}>Sobre</Link></li>
           </ul>
         </nav>
-
+        
         <div className={styles.actionsContainer}>
           {loading ? (
             <div className={styles.loader}></div>

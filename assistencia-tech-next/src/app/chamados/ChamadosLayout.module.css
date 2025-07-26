@@ -1,11 +1,11 @@
 .layoutContainer {
   display: flex;
-  min-height: calc(100vh - 84px); /* Subtrai a altura da navbar */
-  background-color: #f8f9fa;
+  min-height: calc(100vh - 84px); 
+  background-color: #eee;
 }
 .sidebar {
   width: 260px;
-  background-color: #fff;
+  background-color: #007bff;
   border-right: 1px solid #e9ecef;
   padding: 2rem 1rem;
   flex-shrink: 0;
@@ -15,6 +15,7 @@
   padding: 0 1rem 1.5rem 1rem;
   border-bottom: 1px solid #eee;
   margin-bottom: 1.5rem;
+  color: #fff;
 }
 .nav {
   display: flex;
@@ -28,7 +29,7 @@
   padding: 0.8rem 1.5rem;
   border-radius: 8px;
   text-decoration: none;
-  color: #333;
+  color: #fff;
   font-weight: 500;
   transition: background-color 0.2s ease, color 0.2s ease;
   justify-content: space-between;
