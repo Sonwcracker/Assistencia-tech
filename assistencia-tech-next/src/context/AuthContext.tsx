@@ -3,41 +3,70 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { UserData } from '@/types'; // Importe a interface de dados do usuário
+// 1. Importar o onSnapshot e Unsubscribe
+import { doc, onSnapshot, Unsubscribe } from 'firebase/firestore';
+import { UserData } from '@/types';
 
-// Adicione os dados do Firestore ao contexto
+// A interface do contexto permanece a mesma
 interface AuthContextType {
   user: User | null;
-  userData: UserData | null; // Guardará os dados do Firestore (nome, foto, tipo, etc.)
+  userData: UserData | null;
   loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({ user: null, userData: null, loading: true });
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      if (user) {
-        // Se o usuário está logado, busca seus dados no Firestore
-        const docRef = doc(db, 'usuarios', user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setUserData(docSnap.data() as UserData);
-        }
-      } else {
-        // Se o usuário fez logout, limpa os dados
-        setUserData(null);
+    // Variável para o listener do documento do usuário
+    let unsubscribeFromUserDoc: Unsubscribe | null = null;
+
+    // O listener de autenticação (login/logout) continua o mesmo
+    const unsubscribeFromAuth = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      
+      // Cancela o listener do documento do usuário anterior para evitar memory leaks
+      if (unsubscribeFromUserDoc) {
+        unsubscribeFromUserDoc();
       }
-      setLoading(false);
+
+      if (currentUser) {
+        // Se há um usuário logado, cria um novo listener para seu documento
+        const userDocRef = doc(db, 'usuarios', currentUser.uid);
+
+        // 2. Substituir getDoc por onSnapshot
+        // onSnapshot "escuta" por qualquer mudança no documento do usuário em tempo real
+        unsubscribeFromUserDoc = onSnapshot(userDocRef, (docSnap) => {
+          if (docSnap.exists()) {
+            setUserData(docSnap.data() as UserData);
+          } else {
+            setUserData(null);
+          }
+          setLoading(false);
+        }, (error) => {
+          console.error("Erro ao escutar dados do usuário:", error);
+          setLoading(false);
+        });
+
+      } else {
+        // Se o usuário fez logout, limpa tudo
+        setUserData(null);
+        setLoading(false);
+      }
     });
 
-    return () => unsubscribe();
+    // 3. Função de limpeza geral
+    // Garante que ambos os listeners sejam removidos quando o app for fechado
+    return () => {
+      unsubscribeFromAuth();
+      if (unsubscribeFromUserDoc) {
+        unsubscribeFromUserDoc();
+      }
+    };
   }, []);
 
   const value = { user, userData, loading };
@@ -46,5 +75,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useAuth = () => {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
+  }
+  return context;
 };

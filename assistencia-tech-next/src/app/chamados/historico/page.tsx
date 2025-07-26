@@ -94,6 +94,7 @@ export default function HistoricoPage() {
 
       <div className={styles.filterTabs}>
         <button onClick={() => setFiltroAtivo('todos')} className={filtroAtivo === 'todos' ? styles.activeTab : ''}>Todos</button>
+        <button onClick={() => setFiltroAtivo('finalizado')} className={filtroAtivo === 'finalizado' ? styles.activeTab : ''}>Finalizados</button>
         <button onClick={() => setFiltroAtivo('aceito')} className={filtroAtivo === 'aceito' ? styles.activeTab : ''}>Aceitos</button>
         <button onClick={() => setFiltroAtivo('recusado_tecnico')} className={filtroAtivo === 'recusado_tecnico' ? styles.activeTab : ''}>Recusados</button>
         <button onClick={() => setFiltroAtivo('cancelado')} className={filtroAtivo === 'cancelado' ? styles.activeTab : ''}>Cancelados</button>
