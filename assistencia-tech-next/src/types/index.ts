@@ -21,6 +21,7 @@ export interface Solicitacao {
   profissao_solicitada: string;
   descricao: string;
   data_criacao: Date;
+  titulo: string; // ✅ Adicione esta linha
   status: string;
   resposta_tecnico?: 'aceito' | 'recusado';
 }

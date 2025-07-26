@@ -20,7 +20,6 @@ import { IoArrowBackOutline, IoMailOutline, IoCallOutline, IoLocationOutline } f
 import { useAuth } from '@/context/AuthContext';
 import Modal from '@/components/Modal';
 
-// 1. INTERFACE ATUALIZADA
 interface Freelancer {
   nome: string;
   sobrenome: string;
@@ -28,7 +27,7 @@ interface Freelancer {
   telefone: string;
   endereco: string;
   descricao: string;
-  profissao: string; // <-- CAMPO ADICIONADO
+  profissao: string;
   foto?: string;
   experiencias?: string;
 }
@@ -37,12 +36,12 @@ export default function FreelancerProfilePage() {
   const router = useRouter();
   const params = useParams();
   const freelancerId = params.id as string;
-
   const { user } = useAuth();
+
   const [freelancerData, setFreelancerData] = useState<Freelancer | null>(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ motivo: '', endereco: '', data: '' });
+  const [formData, setFormData] = useState({ titulo: '', motivo: '' });
 
   useEffect(() => {
     async function fetchFreelancer() {
@@ -67,10 +66,9 @@ export default function FreelancerProfilePage() {
   };
 
   const handleSubmit = async () => {
-    if (!user || !freelancerData) return; // Garante que freelancerData não é nulo
+    if (!user || !freelancerData) return;
 
     try {
-      // Verifica se já existe uma solicitação aberta
       const q = query(
         collection(db, 'solicitacoes'),
         where('cliente_id', '==', user.uid),
@@ -80,31 +78,25 @@ export default function FreelancerProfilePage() {
       const snapshot = await getDocs(q);
 
       if (!snapshot.empty) {
-        alert('Você já possui uma solicitação em aberto com este profissional. Finalize-a antes de enviar uma nova.');
+        alert('Você já possui uma solicitação em aberto com este profissional.');
         return;
       }
 
-      // 2. CRIAÇÃO DO CHAMADO CORRIGIDA
       await addDoc(collection(db, 'solicitacoes'), {
         cliente_id: user.uid,
         tecnico_id: freelancerId,
-        nome: freelancerData.nome, // Usando os dados do perfil
+        nome: freelancerData.nome,
         email: freelancerData.email,
-        profissao_solicitada: freelancerData.profissao, // <-- CORREÇÃO PRINCIPAL
-        data_criacao: serverTimestamp(),
-        data_prevista: formData.data,
-        endereco: formData.endereco,
+        profissao_solicitada: freelancerData.profissao,
+        titulo: formData.titulo,
         descricao: formData.motivo,
+        data_criacao: serverTimestamp(),
         status: 'aberto',
-        // Os campos abaixo podem precisar de revisão futura, mas não causam o bug atual
-        profissional_id: '',
-        cep: '',
       });
 
-      alert('Solicitação enviada com sucesso!');
       setIsModalOpen(false);
-      setFormData({ motivo: '', endereco: '', data: '' });
-
+      setFormData({ titulo: '', motivo: '' });
+      alert('Solicitação enviada com sucesso!');
     } catch (error) {
       console.error('Erro ao enviar solicitação:', error);
       alert('Erro ao enviar solicitação.');
@@ -116,8 +108,7 @@ export default function FreelancerProfilePage() {
       router.push('/login');
       return;
     }
-    // A lógica de verificação antes de abrir o modal é boa.
-    // O código aqui já está correto.
+
     try {
       const q = query(
         collection(db, 'solicitacoes'),
@@ -128,7 +119,7 @@ export default function FreelancerProfilePage() {
       const snapshot = await getDocs(q);
 
       if (!snapshot.empty) {
-        alert('Você já possui uma solicitação em aberto com este profissional. Finalize-a antes de enviar uma nova.');
+        alert('Você já possui uma solicitação em aberto com este profissional.');
         return;
       }
 
@@ -162,28 +153,21 @@ export default function FreelancerProfilePage() {
         <div className={styles.profileCard}>
           <div className={styles.leftColumn}>
             <div className={styles.profileImageWrapper}>
-              <Image
-                src={imagemSrc}
-                alt={`Foto de ${freelancerData.nome}`}
-                fill
-                style={{ objectFit: 'cover' }}
-              />
+              <Image src={imagemSrc} alt={`Foto de ${freelancerData.nome}`} fill style={{ objectFit: 'cover' }} />
             </div>
             <h1 className={styles.name}>{freelancerData.nome} {freelancerData.sobrenome}</h1>
             <div className={styles.infoItem}>
               <IoLocationOutline />
               <span>{freelancerData.endereco}</span>
             </div>
-            <button onClick={handleContratarClick} className={styles.ctaButton}>
-              Contratar
-            </button>
+            <button onClick={handleContratarClick} className={styles.ctaButton}>Contratar</button>
           </div>
 
           <div className={styles.rightColumn}>
             <h2>Sobre Mim</h2>
-            <p className={styles.description}>{freelancerData.descricao || "Nenhuma descrição fornecida."}</p>
+            <p className={styles.description}>{freelancerData.descricao || 'Nenhuma descrição fornecida.'}</p>
             <h2>Experiências</h2>
-            <p className={styles.experiences}>{freelancerData.experiencias || "Nenhuma experiência informada."}</p>
+            <p className={styles.experiences}>{freelancerData.experiencias || 'Nenhuma experiência informada.'}</p>
             <div className={styles.contactInfo}>
               <h3>Informações de Contato</h3>
               <div className={styles.infoItem}>
@@ -200,36 +184,26 @@ export default function FreelancerProfilePage() {
       </div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-  <div className={styles.modalContent}>
-    <h2>Formulário de Contratação</h2>
+        <div className={styles.modalContent}>
+          <h2>Formulário de Contratação</h2>
+          <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+            <label>
+              Título:
+              <input type="text" name="titulo" value={formData.titulo} onChange={handleInputChange} required />
+            </label>
 
-    <label>
-      Título:
-      <input type="text" name="titulo" value={formData.titulo} onChange={handleInputChange} />
-    </label>
+            <label>
+              Motivo:
+              <textarea name="motivo" value={formData.motivo} onChange={handleInputChange} rows={4} required />
+            </label>
 
-    <label>
-      Motivo:
-      <textarea name="motivo" value={formData.motivo} onChange={handleInputChange} />
-    </label>
-
-    <label>
-      Endereço:
-      <input type="text" name="endereco" value={formData.endereco} onChange={handleInputChange} />
-    </label>
-
-    <label>
-      Data disponível:
-      <input type="date" name="data" value={formData.data} onChange={handleInputChange} />
-    </label>
-
-    <div className={styles.modalActions}>
-      <button className={styles.modalButtonCancel} onClick={() => setIsModalOpen(false)}>Cancelar</button>
-      <button className={styles.modalButtonConfirm} onClick={handleSubmit}>Enviar</button>
-    </div>
-  </div>
-</Modal>
-
+            <div className={styles.modalActions}>
+              <button type="button" className={styles.modalButtonCancel} onClick={() => setIsModalOpen(false)}>Cancelar</button>
+              <button type="submit" className={styles.modalButtonConfirm}>Enviar</button>
+            </div>
+          </form>
+        </div>
+      </Modal>
     </>
   );
 }
