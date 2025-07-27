@@ -1,9 +1,9 @@
 /* Estilo geral da página (Tema Claro) */
 .pageContainer {
-  background-color: #fff; /* Fundo branco */
-  color: #333; /* Cor de texto padrão escura */
+  background-color: #fff;
+  color: #333;
   min-height: 100vh;
-  padding: 2rem 20%;
+  padding: 2rem 15%;
 }
 
 .header {
@@ -13,14 +13,131 @@
 .pageTitle {
   font-size: 2.5rem;
   text-transform: capitalize;
-  color: #222; /* Cor do título escura */
+  color: #222;
 }
 
+/* Estilo do banner da profissão */
+.bannerImagem {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+/* Seção de descrição */
+.descricaoContainer {
+  margin-bottom: 2rem;
+}
+
+.descricao {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.subtitulo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 1.5rem 0 1rem;
+  color: #222;
+}
+
+.textoPromocional {
+  background-color: #f9f9f9;
+  padding: 1rem 1.5rem;
+  border-left: 4px solid #007bff;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+  color: #333;
+}
+
+.tituloLista {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.listaExperiencias {
+  list-style: none;
+  padding-left: 1rem;
+  color: #444;
+}
+
+.listaExperiencias li {
+  margin-bottom: 0.5rem;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.listaExperiencias li::before {
+  content: "✔";
+  position: absolute;
+  left: 0;
+  color: #007bff;
+  font-size: 1rem;
+}
+
+/* Cards dos freelancers */
+.listaFreelancers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.cardFreelancer {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+}
+
+.fotoFreelancer {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 0.75rem;
+  border: 2px solid #007bff;
+}
+
+.cardFreelancer h4 {
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+  color: #222;
+}
+
+.cardFreelancer p {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 0.75rem;
+}
+
+.botaoContato {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.botaoContato:hover {
+  background-color: #0056b3;
+}
+
+/* Componentes anteriores preservados abaixo */
 .contentContainer {
   width: 100%;
 }
 
-/* Barra de Filtro (Tema Claro) */
 .filterBar {
   display: flex;
   align-items: center;
@@ -30,13 +147,13 @@
 
 .filterBar label {
   font-size: 1rem;
-  color: #555; /* Cinza escuro para o texto */
+  color: #555;
 }
 
 .filterSelect {
   background-color: #fff;
   color: #333;
-  border: 1px solid #ccc; /* Borda cinza claro */
+  border: 1px solid #ccc;
   border-radius: 8px;
   padding: 0.75rem 1rem;
   font-size: 1rem;
@@ -46,11 +163,10 @@
 
 .filterSelect:focus {
   outline: none;
-  border-color: #007bff; /* Borda azul ao focar */
+  border-color: #007bff;
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 }
 
-/* Grade de Cards (Tema Claro) */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -60,7 +176,7 @@
 .card {
   background-color: #fff;
   border-radius: 12px;
-  border: 1px solid #eee; /* Borda sutil */
+  border: 1px solid #eee;
   overflow: hidden;
   text-decoration: none;
   color: #333;
@@ -71,14 +187,14 @@
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Sombra para o tema claro */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .cardImageContainer {
   width: 100%;
   padding-top: 100%;
   position: relative;
-  background-color: #f0f0f0; /* Cor de fundo para a imagem */
+  background-color: #f0f0f0;
 }
 
 .cardImageContainer img {
@@ -101,7 +217,7 @@
 }
 
 .cardSubtitle {
-  color: #666; /* Cinza para a profissão */
+  color: #666;
   font-size: 0.9rem;
   text-transform: capitalize;
 }
