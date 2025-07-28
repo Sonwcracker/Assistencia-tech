@@ -1,0 +1,174 @@
+.wrapper {
+  background-color: #f8f9fa;
+  padding: 4rem 2rem;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.header {
+  margin-bottom: 3rem;
+}
+
+.header h1 {
+  font-size: 2.8rem;
+  font-weight: bold;
+  color: #222;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #555;
+  margin-top: 0.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.toggleGroup {
+  margin-top: 2rem;
+  display: inline-flex;
+  background-color: #e9ecef;
+  border-radius: 999px;
+  padding: 5px;
+}
+
+.toggleBtn {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  background-color: transparent;
+  border-radius: 999px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  color: #555;
+}
+
+.toggleBtn.active {
+  background-color: #007bff;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 123, 255, 0.3);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  align-items: stretch;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  border: 1px solid #e9ecef;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.popular {
+    border: 2px solid #007bff;
+}
+
+.popularBadge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #007bff;
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.card h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.priceBox {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.price {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #222;
+}
+
+.priceNote {
+  font-size: 1rem;
+  color: #888;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2.5rem;
+  flex-grow: 1; /* Empurra o botão para baixo */
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.checkIcon {
+  color: #28a745;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.ctaBtn {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.ctaBtn:hover {
+  background-color: #0056b3;
+}
+
+.card.popular .ctaBtn {
+    background-color: #0056b3;
+}
+.card.popular .ctaBtn:hover {
+    background-color: #004494;
+}
+
+/* Animação de Fade */
+.fade-in {
+  opacity: 1;
+  transition: opacity 0.2s ease-in;
+}
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}

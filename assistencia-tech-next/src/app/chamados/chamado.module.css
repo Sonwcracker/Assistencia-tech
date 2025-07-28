@@ -179,3 +179,20 @@
   background-color: #005ec2;
 }
 
+/* --- Estilos para o Modal de Aviso --- */
+.infoModalContent {
+  text-align: center;
+  padding: 1rem;
+}
+
+.infoModalContent h3 {
+  font-size: 1.5rem;
+  color: #28a745; /* Verde para sucesso */
+  margin-bottom: 1rem;
+}
+
+.infoModalContent p {
+  color: #555;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}

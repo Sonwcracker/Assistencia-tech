@@ -1,130 +1,120 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import styles from "./funciona.module.css";
+import React, { useState } from 'react';
+import Image from 'next/image';
+import styles from './Sobre.module.css';
+import { IoShieldCheckmarkOutline, IoPeopleOutline, IoRocketOutline, IoSearchOutline, IoCreateOutline, IoNotificationsOutline, IoDocumentTextOutline, IoHappyOutline } from 'react-icons/io5';
 
-const ComoFunciona: React.FC = () => {
-  const [perfil, setPerfil] = useState<"cliente" | "especialista">("cliente");
+export default function SobrePage() {
+  const [activeTab, setActiveTab] = useState<'cliente' | 'tecnico'>('cliente');
 
-  const etapasCliente = [
-    {
-      numero: "01",
-      titulo: "Entre em nosso site",
-      texto:
-        "Ela vai servir para você solicitar os orçamentos pela 'Nome site' e seus dados ficarão seguros, respeitando a LGPD.",
-    },
-    {
-      numero: "02",
-      titulo: "Escolha o serviço que quer contratar",
-      texto:
-        "Temos 09 opções de serviços para atender suas necessidades. Basta encontrar o que precisa e selecionar para começar a receber os orçamentos.",
-    },
-    {
-      numero: "03",
-      titulo: "Receba propostas de vários clientes",
-      texto:
-        "Sua demanda vai chegar para os nossos especialistas em segundos. Eles irão te enviar as propostas pelo WhatsApp, para facilitar a sua escolha.",
-    },
-    {
-      numero: "04",
-      titulo: "Contrate o especialista que preferir",
-      texto:
-        "Você escolhe qual profissional vai te atender com base na avaliação, valor etc.",
-    },
-    {
-      numero: "05",
-      titulo: "Pague com segurança",
-      texto:
-        "Plataforma segura para pagamento, sem burocracia e com opção de parcelamento.",
-    },
+  const clienteSteps = [
+    { icon: <IoSearchOutline />, text: 'Busque pelo serviço ou profissional que você precisa.' },
+    { icon: <IoPeopleOutline />, text: 'Analise os perfis, competências e avaliações de outros clientes.' },
+    { icon: <IoHappyOutline />, text: 'Entre em contato, solicite um orçamento e contrate com segurança.' }
   ];
 
-  const etapasEspecialista = [
-    {
-      numero: "01",
-      titulo: "Cadastre-se gratuitamente",
-      texto:
-        "Crie sua conta em poucos cliques para começar a receber solicitações.",
-    },
-    {
-      numero: "02",
-      titulo: "Escolha suas especialidades",
-      texto:
-        "Você seleciona os serviços que oferece e a região de atuação.",
-    },
-    {
-      numero: "03",
-      titulo: "Receba pedidos de clientes",
-      texto:
-        "Receba uma notificação com os detalhes do pedido assim que solicitado.",
-    },
-    {
-      numero: "04",
-      titulo: "Envie seu orçamento",
-      texto:
-        "Envie sua proposta pelo WhatsApp e negocie com o cliente.",
-    },
-    {
-      numero: "05",
-      titulo: "Ganhe dinheiro fazendo o que sabe",
-      texto:
-        "Feche o serviço e receba com segurança via plataforma.",
-    },
+  const tecnicoSteps = [
+    { icon: <IoCreateOutline />, text: 'Cadastre seu perfil gratuitamente e adicione suas competências.' },
+    { icon: <IoNotificationsOutline />, text: 'Receba notificações de novos chamados na sua área de atuação.' },
+    { icon: <IoDocumentTextOutline />, text: 'Envie sua proposta, seja contratado e aumente sua renda.' }
   ];
 
   return (
-    <div>
-      <section className={styles["perfil-container"]}>
-        <div className={styles["perfil-tabs"]}>
-          <button
-            className={`${styles.tab} ${styles.cliente} ${
-              perfil === "cliente" ? styles.active : ""
-            }`}
-            onClick={() => setPerfil("cliente")}
-          >
-            Quero Contratar
-          </button>
-          <button
-            className={`${styles.tab} ${styles.especialista} ${
-              perfil === "especialista" ? styles.active : ""
-            }`}
-            onClick={() => setPerfil("especialista")}
-          >
-            Sou Especialista
-          </button>
-        </div>
-        <div
-          className={styles.indicador}
-          style={{
-            backgroundColor: perfil === "cliente" ? "#3b79c9" : "#f16e6e",
-          }}
-        >
-          Como funciona a Servify
+    <div className={styles.pageContainer}>
+      {/* Seção Hero */}
+      <section className={`${styles.hero} ${styles.section}`}>
+        <div className={styles.heroContent}>
+          <h1 className={styles.heroTitle}>Conectando Pessoas, Resolvendo Problemas.</h1>
+          <p className={styles.heroSubtitle}>
+            Nossa missão é simplificar a contratação de serviços, oferecendo uma plataforma segura,
+            eficiente e acessível que valoriza tanto o cliente quanto o profissional.
+          </p>
         </div>
       </section>
 
-      <section className={styles["linha-do-tempo"]}>
-        <h1>
-          {perfil === "cliente"
-            ? "Quer começar a contratar especialistas? É muito simples!"
-            : "Quer começar a receber pedidos? Veja como é fácil!"}
-        </h1>
-        <div className={styles["etapas-container"]}>
-          {(perfil === "cliente" ? etapasCliente : etapasEspecialista).map(
-            (etapa) => (
-              <div className={styles.etapa} key={etapa.numero}>
-                <span className={styles.numero}>{etapa.numero}</span>
-                <div className={styles.conteudo}>
-                  <h2>{etapa.titulo}</h2>
-                  <p>{etapa.texto}</p>
+      {/* Seção Como Funciona */}
+      <section className={`${styles.howItWorks} ${styles.section}`}>
+        <div className={styles.container}>
+          <h2 className={styles.sectionTitle}>Como Funciona</h2>
+          <div className={styles.tabs}>
+            <button
+              className={`${styles.tabButton} ${activeTab === 'cliente' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('cliente')}
+            >
+              Para Clientes
+            </button>
+            <button
+              className={`${styles.tabButton} ${activeTab === 'tecnico' ? styles.activeTab : ''}`}
+              onClick={() => setActiveTab('tecnico')}
+            >
+              Para Profissionais
+            </button>
+          </div>
+
+          <div className={styles.tabContent}>
+            <div className={styles.stepsGrid}>
+              {(activeTab === 'cliente' ? clienteSteps : tecnicoSteps).map((step, index) => (
+                <div key={index} className={styles.stepCard}>
+                  <div className={styles.stepIconWrapper}>
+                    {step.icon}
+                  </div>
+                  <h3 className={styles.stepTitle}>Passo {index + 1}</h3>
+                  <p className={styles.stepText}>{step.text}</p>
                 </div>
-              </div>
-            )
-          )}
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Seção de História */}
+      <section className={`${styles.history} ${styles.section}`}>
+        <div className={`${styles.container} ${styles.historyContainer}`}>
+          <div className={styles.historyImage}>
+            <Image
+              src="/images/logoBranca.png"
+              alt="Logo Servify"
+              width={500}
+              height={500}
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
+          <div className={styles.historyContent}>
+            <h2 className={styles.historyTitle}>Nossa Jornada</h2>
+            <p>
+              A Servify nasceu da necessidade de encontrar serviços confiáveis de forma rápida.
+              Cansados da incerteza e da dificuldade em achar bons profissionais para tarefas do dia a dia,
+              decidimos criar uma solução. Começamos como um pequeno projeto e hoje nos orgulhamos de ser
+              a ponte que conecta milhares de clientes a especialistas dedicados em todo o país,
+              facilitando a vida e gerando novas oportunidades de trabalho.
+            </p>
+          </div>
+        </div>
+      </section>
+      {/* Seção de Valores */}
+      <section className={`${styles.values} ${styles.section}`}>
+        <div className={styles.container}>
+          <h2 className={styles.sectionTitle}>Nossos Pilares</h2>
+          <div className={styles.valuesGrid}>
+            <div className={styles.valueCard}>
+              <IoShieldCheckmarkOutline className={styles.valueIcon} />
+              <h3>Confiança e Segurança</h3>
+              <p>Verificamos nossos profissionais e garantimos um ambiente seguro para negociações e pagamentos.</p>
+            </div>
+            <div className={styles.valueCard}>
+              <IoPeopleOutline className={styles.valueIcon} />
+              <h3>Valorização Humana</h3>
+              <p>Acreditamos no potencial de cada profissional e criamos oportunidades para o crescimento de talentos locais.</p>
+            </div>
+            <div className={styles.valueCard}>
+              <IoRocketOutline className={styles.valueIcon} />
+              <h3>Inovação e Simplicidade</h3>
+              <p>Usamos a tecnologia para tornar a contratação de serviços tão simples quanto pedir um lanche, sem burocracia.</p>
+            </div>
+          </div>
         </div>
       </section>
     </div>
   );
-};
-
-export default ComoFunciona;
+}

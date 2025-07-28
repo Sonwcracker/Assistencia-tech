@@ -125,16 +125,15 @@ export default function AndamentoPage() {
         {!loading && selectedChamado && clienteChamado && (
           <div className={styles.modalGrid}>
             <div className={styles.modalLeft}>
-              <Image src={clienteChamado.foto || '/images/placeholder.jpg'} width={80} height={80} alt="foto cliente" className={styles.modalImage}/>
+              <Image src={clienteChamado.foto || '/images/placeholder.png'} width={80} height={80} alt="foto cliente" className={styles.modalImage}/>
               <h3>{clienteChamado.nome} {clienteChamado.sobrenome}</h3>
               <p className={styles.modalInfo}>{clienteChamado.endereco}</p>
             </div>
             <div className={styles.modalRight}>
-              <h2>{selectedChamado.profissao_solicitada}</h2>
+              <h2 className={styles.modalTitle}>{selectedChamado.titulo}</h2>
               <p className={styles.modalDescription}>{selectedChamado.descricao}</p>
               
               <div className={styles.actionButtonsContainer}>
-                {/* BOTÃO WHATSAPP - **VARIÁVEL CORRIGIDA** */}
                 {clienteChamado.telefone && (
                   <a
                     href={`https://wa.me/55${clienteChamado.telefone.replace(/\D/g, '')}?text=${encodeURIComponent(
@@ -147,8 +146,6 @@ export default function AndamentoPage() {
                     Entrar em contato pelo WhatsApp
                   </a>
                 )}
-
-                {/* BOTÃO CONCLUIR - **FUNÇÃO AGORA EXISTE** */}
                 <button onClick={marcarComoConcluido} className={`${styles.actionButton} ${styles.concluirButton}`}>
                   Marcar como Concluído
                 </button>

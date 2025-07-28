@@ -16,6 +16,7 @@ import { useAuth } from '@/context/AuthContext';
 import Modal from '@/components/Modal';
 import Image from 'next/image';
 import { Solicitacao, UserData } from '@/types';
+import { IoLogoWhatsapp } from 'react-icons/io5'; // Ícone para o botão
 
 export default function EmAndamentoClientePage() {
   const { user } = useAuth();
@@ -110,7 +111,7 @@ export default function EmAndamentoClientePage() {
             <div className={styles.modalLeft}>
               <h3>Profissional</h3>
               <div className={styles.professionalInfo}>
-                <Image src={profissional.foto || '/images/placeholder.jpg'} width={80} height={80} alt="foto profissional" className={styles.modalImage} />
+                <Image src={profissional.foto || '/images/placeholder.png'} width={80} height={80} alt="foto profissional" className={styles.modalImage} />
                 <h4>{profissional.nome} {profissional.sobrenome}</h4>
                 <p className={styles.profissao}>{profissional.profissao}</p>
                 <p className={styles.email}>{profissional.email}</p>
@@ -119,10 +120,20 @@ export default function EmAndamentoClientePage() {
             <div className={styles.modalRight}>
               <h2 className={styles.modalTitle}>{selectedServico.titulo}</h2>
               <p className={styles.modalDescription}><strong>Descrição:</strong> {selectedServico.descricao}</p>
-              <p><strong>Status:</strong> {selectedServico.status}</p>
-              
               <div className={styles.botoes}>
-                {/* Futuramente, você pode adicionar botões de ação aqui */}
+                {profissional.telefone && (
+                  <a
+                    href={`https://wa.me/${profissional.telefone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                      `Olá ${profissional.nome}, sou cliente do seu chamado "${selectedServico.titulo}" no Servify.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.whatsappButton}
+                  >
+                    <IoLogoWhatsapp />
+                    Entrar em contato
+                  </a>
+                )}
               </div>
             </div>
           </div>

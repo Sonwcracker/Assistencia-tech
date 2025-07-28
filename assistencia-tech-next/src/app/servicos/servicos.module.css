@@ -231,3 +231,25 @@
   z-index: 2001;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
+
+/* Adicione ao seu servicos.module.css se não existir */
+.whatsappButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #25d366; /* Cor do WhatsApp */
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+  text-decoration: none;
+  margin-top: auto; /* Empurra o botão para o final do modal */
+  align-self: flex-end; /* Alinha o botão à direita */
+  transition: background-color 0.3s ease;
+}
+
+.whatsappButton:hover {
+  background-color: #1ebc59;
+}

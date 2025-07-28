@@ -2,20 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import styles from './chamado.module.css';
-import {
-  collection,
-  doc,
-  getDoc,
-  query,
-  where,
-  updateDoc,
-  Timestamp,
-  onSnapshot,
-  Unsubscribe,
-} from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, query, where, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import Modal from '@/components/Modal';
+import ConfirmationModal from '@/components/ConfirmationModal';
 import Image from 'next/image';
 import { Solicitacao, UserData } from '@/types';
 
@@ -23,77 +14,104 @@ export default function NovosChamadosPage() {
   const { user, userData } = useAuth();
   const [chamadosDisponiveis, setChamadosDisponiveis] = useState<Solicitacao[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Estados dos Modais
   const [selectedChamado, setSelectedChamado] = useState<Solicitacao | null>(null);
   const [clienteChamado, setClienteChamado] = useState<UserData | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  
+  // Estados para o fluxo de confirmação
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [actionToConfirm, setActionToConfirm] = useState<'aceito_tecnico' | 'recusado_tecnico' | null>(null);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [infoModalMessage, setInfoModalMessage] = useState('');
 
   useEffect(() => {
-    let unsubscribe: Unsubscribe | null = null;
+    if (userData?.tipo === 'tecnico' && userData.profissao) {
+      const fetchChamados = async () => {
+        setLoading(true);
+        try {
+          const q = query(
+            collection(db, 'solicitacoes'),
+            where('profissao_solicitada', '==', userData.profissao),
+            where('status', '==', 'aberto')
+          );
+          
+          const snapshot = await getDocs(q);
 
-    if (user && userData?.tipo === 'tecnico') {
-      const q = query(
-        collection(db, 'solicitacoes'),
-        where('tecnico_id', '==', user.uid),
-        where('status', '==', 'aberto')
-      );
+          const chamadosDataPromises = snapshot.docs.map(async (docSnap) => {
+            const data = docSnap.data();
+            const clienteRef = doc(db, 'usuarios', data.cliente_id);
+            const clienteSnap = await getDoc(clienteRef);
+            const nomeCliente = clienteSnap.exists() ? clienteSnap.data().nome : 'Cliente Desconhecido';
+            
+            return {
+              id: docSnap.id,
+              ...docSnap.data(),
+              data_criacao: (data.data_criacao as Timestamp).toDate(),
+              nomeCliente: nomeCliente,
+            } as Solicitacao;
+          });
 
-      unsubscribe = onSnapshot(q, async (querySnapshot) => {
-        const chamadosDataPromises = querySnapshot.docs.map(async (docSnap) => {
-          const data = docSnap.data();
-          const clienteRef = doc(db, 'usuarios', data.cliente_id);
-          const clienteSnap = await getDoc(clienteRef);
-          const nomeCliente = clienteSnap.exists() ? clienteSnap.data().nome : 'Cliente Desconhecido';
-
-          return {
-            id: docSnap.id,
-            ...docSnap.data(),
-            data_criacao: (data.data_criacao as Timestamp).toDate(),
-            nomeCliente: nomeCliente,
-          } as Solicitacao;
-        });
-
-        const chamadosData = await Promise.all(chamadosDataPromises);
-        setChamadosDisponiveis(chamadosData);
-        setLoading(false);
-      }, (error) => {
-        console.error('Erro ao escutar chamados:', error);
-        setLoading(false);
-      });
-    } else {
+          const chamadosData = await Promise.all(chamadosDataPromises);
+          setChamadosDisponiveis(chamadosData);
+        } catch (error) {
+          console.error("Erro ao buscar chamados:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchChamados();
+    } else if (userData) {
       setLoading(false);
       setChamadosDisponiveis([]);
     }
-
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  }, [user, userData]);
+  }, [userData]);
 
   const openDetailModal = async (chamado: Solicitacao) => {
     setSelectedChamado(chamado);
-    if (chamado.cliente_id) {
-      setLoading(true);
-      const clienteRef = doc(db, 'usuarios', chamado.cliente_id);
-      const clienteSnap = await getDoc(clienteRef);
-      if (clienteSnap.exists()) {
-        setClienteChamado(clienteSnap.data() as UserData);
-      }
-      setLoading(false);
+    setLoading(true);
+    const clienteRef = doc(db, 'usuarios', chamado.cliente_id);
+    const clienteSnap = await getDoc(clienteRef);
+    if (clienteSnap.exists()) {
+      setClienteChamado(clienteSnap.data() as UserData);
     }
+    setLoading(false);
     setIsDetailModalOpen(true);
   };
 
-  const handleResponse = async (resposta: 'aceito_tecnico' | 'recusado_tecnico') => {
-    if (!selectedChamado || !user) return;
+  const handleResponseClick = (resposta: 'aceito_tecnico' | 'recusado_tecnico') => {
+    setActionToConfirm(resposta);
+    setIsDetailModalOpen(false);
+    setIsConfirmModalOpen(true);
+  };
+
+  const handleConfirmResponse = async () => {
+    if (!selectedChamado || !user || !actionToConfirm) return;
+    
     try {
       const ref = doc(db, 'solicitacoes', selectedChamado.id);
       await updateDoc(ref, {
-        status: resposta,
+        status: actionToConfirm,
+        tecnico_id: user.uid,
+        resposta_tecnico: actionToConfirm === 'aceito_tecnico' ? 'aceito' : 'recusado'
       });
-      setIsDetailModalOpen(false);
-      alert(`Chamado ${resposta === 'aceito_tecnico' ? 'aceito' : 'recusado'} com sucesso!`);
+      
+      setChamadosDisponiveis(prev => prev.filter(c => c.id !== selectedChamado.id));
+      setIsConfirmModalOpen(false);
+      
+      if (actionToConfirm === 'aceito_tecnico') {
+        setInfoModalMessage('Chamado aceito com sucesso! Ele foi movido para a aba "Em Andamento". Você já pode entrar em contato com o cliente.');
+      } else {
+        setInfoModalMessage('Chamado recusado com sucesso.');
+      }
+      setIsInfoModalOpen(true);
+
+      setTimeout(() => setIsInfoModalOpen(false), 5000);
+
     } catch (error) {
-      console.error('Erro ao responder chamado:', error);
+      console.error("Erro ao responder chamado:", error);
+      alert("Ocorreu um erro ao responder o chamado.");
     }
   };
 
@@ -141,12 +159,27 @@ export default function NovosChamadosPage() {
               <p className={styles.modalDescription}>{selectedChamado.descricao}</p>
               <span className={styles.modalDate}>Solicitado em: {selectedChamado.data_criacao.toLocaleDateString('pt-BR')}</span>
               <div className={styles.botoes}>
-                <button onClick={() => handleResponse('recusado_tecnico')} className={styles.recusar}>Recusar</button>
-                <button onClick={() => handleResponse('aceito_tecnico')} className={styles.aceitar}>Aceitar Chamado</button>
+                <button onClick={() => handleResponseClick('recusado_tecnico')} className={styles.recusar}>Recusar</button>
+                <button onClick={() => handleResponseClick('aceito_tecnico')} className={styles.aceitar}>Aceitar Chamado</button>
               </div>
             </div>
           </div>
         )}
+      </Modal>
+
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleConfirmResponse}
+        message={`Você tem certeza que deseja ${actionToConfirm === 'aceito_tecnico' ? 'aceitar' : 'recusar'} este chamado?`}
+      />
+
+      <Modal isOpen={isInfoModalOpen} onClose={() => setIsInfoModalOpen(false)}>
+        <div className={styles.infoModalContent}>
+          <h3>{actionToConfirm === 'aceito_tecnico' ? 'Sucesso!' : 'Ação Concluída'}</h3>
+          <p>{infoModalMessage}</p>
+          <button onClick={() => setIsInfoModalOpen(false)} className={styles.aceitar}>Ok</button>
+        </div>
       </Modal>
     </>
   );

@@ -1,0 +1,206 @@
+.pageContainer {
+  background-color: #fff;
+}
+
+.section {
+  padding: 4rem 2rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Seção Hero */
+.hero {
+  background-color: #0180ff;
+  color: #fff;
+  text-align: center;
+  padding: 5rem 2rem;
+}
+
+.heroContent {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.heroSubtitle {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+}
+
+/* Seção Como Funciona */
+.howItWorks {
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 3rem;
+  color: #333;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.tabButton {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: 2px solid transparent;
+  background-color: #e9ecef;
+  color: #555;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tabButton:hover {
+  background-color: #dee2e6;
+}
+
+.tabButton.activeTab {
+  background-color: #fff;
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.tabContent {
+  padding: 1rem;
+}
+
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.stepCard {
+  background-color: #fff;
+  padding: 2.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stepIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: #eaf3ff;
+  margin-bottom: 1.5rem;
+}
+
+.stepIconWrapper svg {
+  font-size: 2.5rem;
+  color: #007bff;
+}
+
+.stepTitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.stepText {
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Seção de Valores */
+.values {
+  background-color: #f8f9fa;
+  text-align: center;
+}
+
+.valuesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.valueCard {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.valueIcon {
+  font-size: 3rem;
+  color: #007bff;
+  margin-bottom: 1.5rem;
+}
+
+.valueCard h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.valueCard p {
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Seção de História */
+.history {
+  background-color: #007bff;
+}
+
+.historyContainer {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.historyImage {
+  flex: 1;
+}
+
+.historyTitle {
+  color: #fff;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 3rem;
+}
+
+.historyContent {
+  flex: 1;
+  text-align: left;
+}
+
+.historyContent p {
+  color: #fff;
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .historyContainer {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .historyContent {
+    text-align: center;
+  }
+}
