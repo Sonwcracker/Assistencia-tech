@@ -22,6 +22,7 @@ export default function ProfissionalInfoPage() {
   const [profissoesList, setProfissoesList] = useState<ProfissaoOption[]>([]);
   const [isCompetencyModalOpen, setIsCompetencyModalOpen] = useState(false);
   const [availableCompetencies, setAvailableCompetencies] = useState<string[]>([]);
+  const [tempCompetencies, setTempCompetencies] = useState<string[]>([]); // Estado temporário para o modal
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -33,8 +34,7 @@ export default function ProfissionalInfoPage() {
     
     const fetchProfessions = async () => {
       try {
-        const professionsCollection = collection(db, 'profissoes');
-        const q = query(professionsCollection, orderBy('nome'));
+        const q = query(collection(db, 'profissoes'), orderBy('nome'));
         const querySnapshot = await getDocs(q);
         const professions = querySnapshot.docs.map(doc => ({
             id: doc.id,
@@ -66,14 +66,22 @@ export default function ProfissionalInfoPage() {
   };
   
   const handleCompetencyToggle = (competencyName: string) => {
-    setProfessionalData(prev => {
-        const currentCompetencies = prev.competencias || [];
-        if (currentCompetencies.includes(competencyName)) {
-            return { ...prev, competencias: currentCompetencies.filter(c => c !== competencyName) };
-        } else {
-            return { ...prev, competencias: [...currentCompetencies, competencyName] };
+    setTempCompetencies(prev => {
+        if (prev.includes(competencyName)) {
+            return prev.filter(c => c !== competencyName);
         }
+        return [...prev, competencyName];
     });
+  };
+
+  const handleSaveCompetencies = () => {
+    setProfessionalData(prev => ({ ...prev, competencias: tempCompetencies }));
+    setIsCompetencyModalOpen(false);
+  };
+  
+  const openCompetencyModal = () => {
+    setTempCompetencies(professionalData?.competencias || []);
+    setIsCompetencyModalOpen(true);
   };
 
   const handleSave = async (fieldName: string) => {
@@ -105,8 +113,10 @@ export default function ProfissionalInfoPage() {
     return <p>Acesso negado ou perfil não encontrado.</p>;
   }
 
-  const renderEditableField = (fieldName: keyof UserData, label: string, as: 'input' | 'textarea' | 'select' = 'input') => {
+  const renderEditableField = (fieldName: keyof UserData, label: string, as: 'select' | 'textarea' = 'input') => {
     const isBeingEdited = editingField === fieldName;
+    const currentProfessionName = profissoesList.find(p => p.id === professionalData.profissao)?.nome || 'Não definida';
+
     return (
       <div className={styles.infoRow}>
         <span className={styles.label}>{label}</span>
@@ -126,7 +136,9 @@ export default function ProfissionalInfoPage() {
               )}
             </>
           ) : (
-            <span className={styles.value}>{professionalData[fieldName] || (fieldName === 'profissao' ? 'Não definida' : 'Nenhuma informação')}</span>
+            <span className={styles.value}>
+                {fieldName === 'profissao' ? currentProfessionName : (professionalData[fieldName] || 'Nenhuma informação')}
+            </span>
           )}
         </div>
         <div className={styles.actionContainer}>
@@ -167,11 +179,12 @@ export default function ProfissionalInfoPage() {
                 <span>Nenhuma competência adicionada.</span>
               )}
             </div>
-            <button type="button" onClick={() => setIsCompetencyModalOpen(true)} className={styles.addCompetencyBtn} disabled={!professionalData.profissao}>
-              <IoAddCircleOutline />
-              Gerenciar Competências
-            </button>
           </div>
+           <div className={styles.actionContainer}>
+             <button type="button" onClick={openCompetencyModal} className={styles.editIcon} disabled={!professionalData.profissao}>
+                <IoPencil />
+            </button>
+           </div>
         </div>
       </div>
 
@@ -192,15 +205,16 @@ export default function ProfissionalInfoPage() {
                         <button 
                             type="button" 
                             onClick={() => handleCompetencyToggle(comp)}
-                            className={professionalData.competencias?.includes(comp) ? styles.removeBtn : styles.addBtn}
+                            className={tempCompetencies.includes(comp) ? styles.removeBtn : styles.addBtn}
                         >
-                            {professionalData.competencias?.includes(comp) ? 'Remover' : 'Adicionar'}
+                            {tempCompetencies.includes(comp) ? 'Remover' : 'Adicionar'}
                         </button>
                     </li>
                 ))}
             </ul>
             <div className={styles.modalActions}>
-                <button onClick={() => setIsCompetencyModalOpen(false)} className={styles.saveButton}>Fechar</button>
+                <button onClick={() => setIsCompetencyModalOpen(false)} className={styles.cancelButton}>Cancelar</button>
+                <button onClick={handleSaveCompetencies} className={styles.saveButton}>Salvar Competências</button>
             </div>
         </div>
       </Modal>

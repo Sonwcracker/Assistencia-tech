@@ -24,16 +24,12 @@ export default function MinhasSolicitacoesPage() {
   const [solicitacoesAtivas, setSolicitacoesAtivas] = useState<Solicitacao[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Estados para o Modal de Detalhes
+  // Estados para os Modais
   const [selectedSolicitacao, setSelectedSolicitacao] = useState<Solicitacao | null>(null);
   const [profissionalData, setProfissionalData] = useState<UserData | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-
-  // Estados para o Modal de Confirmação de Cancelamento
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [solicitacaoParaCancelar, setSolicitacaoParaCancelar] = useState<string | null>(null);
-
-  // Estado para a mensagem de sucesso
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -46,9 +42,9 @@ export default function MinhasSolicitacoesPage() {
       setLoading(true);
       try {
         const q = query(
-          collection(db, 'solicitacoes'),
+          collection(db, 'solicitacoes'), 
           where('cliente_id', '==', user.uid),
-          where('status', 'in', ['aberto', 'em_andamento', 'aceito_tecnico', 'recusado_tecnico'])
+          where('status', 'in', ['aberto'])
         );
         const snapshot = await getDocs(q);
 
@@ -63,17 +59,12 @@ export default function MinhasSolicitacoesPage() {
               nomeProfissional = tecSnap.data().nome;
             }
           }
-
+          
           return {
             id: docSnap.id,
-            cliente_id: data.cliente_id,
-            tecnico_id: data.tecnico_id,
-            nomeProfissional: nomeProfissional,
-            profissao_solicitada: data.profissao_solicitada,
-            descricao: data.descricao,
+            ...data,
             data_criacao: (data.data_criacao as Timestamp).toDate(),
-            status: data.status,
-            resposta_tecnico: data.resposta_tecnico,
+            nomeProfissional: nomeProfissional,
           } as Solicitacao;
         });
 
@@ -89,23 +80,23 @@ export default function MinhasSolicitacoesPage() {
 
     fetchSolicitacoes();
   }, [user]);
-
+  
   const handleCardClick = async (solicitacao: Solicitacao) => {
     setSelectedSolicitacao(solicitacao);
     if (solicitacao.tecnico_id) {
-      const tecRef = doc(db, 'usuarios', solicitacao.tecnico_id);
-      const tecSnap = await getDoc(tecRef);
-      if (tecSnap.exists()) {
-        setProfissionalData(tecSnap.data() as UserData);
-      }
+        const tecRef = doc(db, 'usuarios', solicitacao.tecnico_id);
+        const tecSnap = await getDoc(tecRef);
+        if (tecSnap.exists()) {
+            setProfissionalData(tecSnap.data() as UserData);
+        }
     } else {
-      setProfissionalData(null);
+        setProfissionalData(null);
     }
     setIsDetailModalOpen(true);
   };
 
   const openCancelConfirmationModal = (id: string) => {
-    setIsDetailModalOpen(false); // Fecha o modal de detalhes se estiver aberto
+    setIsDetailModalOpen(false);
     setSolicitacaoParaCancelar(id);
     setIsCancelModalOpen(true);
   };
@@ -117,10 +108,9 @@ export default function MinhasSolicitacoesPage() {
         setSolicitacoesAtivas(prev => prev.filter(s => s.id !== solicitacaoParaCancelar));
         setSuccessMessage('Solicitação cancelada com sucesso!');
         setIsCancelModalOpen(false);
-        setTimeout(() => setSuccessMessage(null), 3000); // Remove a mensagem após 3 segundos
+        setTimeout(() => setSuccessMessage(null), 3000);
       } catch (error) {
         console.error('Erro ao cancelar serviço:', error);
-        alert('Erro ao cancelar. Tente novamente.');
       } finally {
         setSolicitacaoParaCancelar(null);
       }
@@ -141,76 +131,61 @@ export default function MinhasSolicitacoesPage() {
         <p>Acompanhe aqui os seus pedidos em aberto e em andamento.</p>
 
         <div className={styles.section}>
-          <h2 className={styles.subtitulo}>Pedidos</h2>
-          {solicitacoesAtivas.length === 0 ? (
-            <p>Você não possui serviços ativos no momento.</p>
-          ) : (
-            <div className={styles.gridSolicitacoes}>
-              {solicitacoesAtivas.map((s) => (
-                <div key={s.id} className={styles.cardSolicitacao}>
-                  <div onClick={() => handleCardClick(s)} className={styles.cardContent}>
-                    <p><strong>Profissão:</strong> {s.profissao_solicitada}</p>
-                    <p><strong>Profissional:</strong> {s.nomeProfissional}</p>
-                    <p><strong>Status:</strong> <span className={styles.status}>{s.status}</span></p>
-                    <p className={styles.data}>Solicitado em: {s.data_criacao.toLocaleDateString('pt-BR')}</p>
+            <h2 className={styles.subtitulo}>Pedidos</h2>
+            {solicitacoesAtivas.length === 0 ? (
+              <p>Você não possui serviços ativos no momento.</p>
+            ) : (
+              <div className={styles.gridSolicitacoes}>
+                {solicitacoesAtivas.map((s) => (
+                  <div key={s.id} className={styles.cardSolicitacao} onClick={() => handleCardClick(s)}>
+                    <div className={styles.cardContent}>
+                      <p><strong>{s.titulo}</strong></p>
+                      <p><strong>Profissão:</strong> {s.profissao_solicitada}</p>
+                      <p><strong>Profissional:</strong> {s.nomeProfissional}</p>
+                      <p><strong>Status:</strong> <span className={styles.status}>{s.status}</span></p>
+                      <p className={styles.data}>Solicitado em: {s.data_criacao.toLocaleDateString('pt-BR')}</p>
+                    </div>
                   </div>
-                  <button
-                    className={styles.btnCancelarCard}
-                    onClick={(e) => {
-                      e.stopPropagation(); // Impede que o modal de detalhes abra
-                      openCancelConfirmationModal(s.id);
-                    }}
-                  >
-                    Cancelar serviço
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            )}
+          </div>
       </div>
 
-          <Modal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)}>
-      {selectedSolicitacao && profissionalData && (
-        <div className={styles.modalGrid}>
-          <div className={styles.modalLeft}>
-            <h3>Profissional</h3>
-            <div className={styles.professionalInfo}>
-              <Image src={profissionalData.foto || '/images/placeholder.jpg'} width={80} height={80} alt="foto profissional" className={styles.modalImage} />
-              <h4>{profissionalData.nome} {profissionalData.sobrenome}</h4>
-              <p className={styles.profissao}>{profissionalData.profissao}</p>
-              <p className={styles.email}>{profissionalData.email}</p>
+      <Modal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)}>
+        {selectedSolicitacao && (
+            <div className={styles.modalGrid}>
+                <div className={styles.modalLeft}>
+                    <h3>Profissional</h3>
+                    {profissionalData ? (
+                        <>
+                            <div className={styles.professionalInfo}>
+                                <Image src={profissionalData.foto || '/images/placeholder.png'} width={80} height={80} alt="foto profissional" className={styles.modalImage} />
+                                <h4>{profissionalData.nome} {profissionalData.sobrenome}</h4>
+                                <p className={styles.profissao}>{profissionalData.profissao}</p>
+                                <p className={styles.email}>{profissionalData.email}</p>
+                            </div>
+                        </>
+                    ) : (
+                        <p>Aguardando aceite de um profissional.</p>
+                    )}
+                </div>
+                <div className={styles.modalRight}>
+                    <h2 className={styles.modalTitle}>{selectedSolicitacao.titulo}</h2>
+                    <p><strong>Descrição:</strong> {selectedSolicitacao.descricao}</p>
+                    <p><strong>Status:</strong> {selectedSolicitacao.status}</p>
+                    <div className={styles.botoes}>
+                        <button 
+                          className={styles.btnCancelarModal} 
+                          onClick={() => openCancelConfirmationModal(selectedSolicitacao.id)}
+                        >
+                          Cancelar Serviço
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div className={styles.competencies}>
-              <strong>Competências:</strong>
-              <div className={styles.competenciesScroll}>
-                {Array.isArray(profissionalData.experiencias) && profissionalData.experiencias.length > 0 ? (
-                  profissionalData.experiencias.map((comp, index) => (
-                    <span key={index} className={styles.competencyTag}>{comp}</span>
-                  ))
-                ) : (
-                  <p style={{ display: 'inline', marginLeft: '5px' }}>Nenhuma informada.</p>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className={styles.modalRight}>
-            <h2>Detalhes da Solicitação</h2>
-            <p><strong>Descrição:</strong> {selectedSolicitacao.descricao}</p>
-            <p><strong>Status:</strong> {selectedSolicitacao.status}</p>
-
-            <div className={styles.botoes}>
-              <button
-                className={styles.btnCancelarModal}
-                onClick={() => openCancelConfirmationModal(selectedSolicitacao.id)}
-              >
-                Cancelar Serviço
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </Modal>
+        )}
+      </Modal>
 
       <ConfirmationModal
         isOpen={isCancelModalOpen}

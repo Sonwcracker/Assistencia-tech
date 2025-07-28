@@ -35,7 +35,7 @@
   justify-content: space-between;
 }
 .navItem svg { font-size: 1.4rem; }
-.navItem:hover { background-color: #e9ecef; }
+.navItem:hover { background-color: #e9ecef; color: #007bff; }
 .navItem.active { background-color: #eaf3ff; color: #007bff; }
 .mainContent { flex: 1; padding: 2rem 4rem; overflow-y: auto; }
 

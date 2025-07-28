@@ -6,7 +6,8 @@ import { db } from '@/lib/firebase';
 import { useAuth } from '@/context/AuthContext';
 import { Solicitacao } from '@/types';
 
-type StatusFiltro = 'todos' | 'aceito' | 'recusado_tecnico' | 'cancelado';
+// O tipo agora inclui 'finalizado' como uma opção separada
+type StatusFiltro = 'todos' | 'aceito_tecnico' | 'recusado_tecnico' | 'finalizado' | 'cancelado';
 
 export default function HistoricoPage() {
   const { user } = useAuth();
@@ -51,13 +52,12 @@ export default function HistoricoPage() {
     fetchChamados();
   }, [user]);
 
+  // CORREÇÃO PRINCIPAL ESTÁ AQUI
   useEffect(() => {
     if (filtroAtivo === 'todos') {
       setChamadosFiltrados(todosChamados);
-    } else if (filtroAtivo === 'aceito') {
-      const aceitos = todosChamados.filter(c => c.status === 'aceito_tecnico' || c.status === 'finalizado');
-      setChamadosFiltrados(aceitos);
     } else {
+      // Filtra pelo status exato selecionado na aba
       const filtrados = todosChamados.filter(c => c.status === filtroAtivo);
       setChamadosFiltrados(filtrados);
     }
@@ -79,10 +79,8 @@ export default function HistoricoPage() {
 
   const formatarStatus = (status: string) => {
     if (status === 'aceito_tecnico') return 'Aceito';
-    if (status === 'finalizado') return 'Finalizado';
     if (status === 'recusado_tecnico') return 'Recusado';
-    if (status === 'cancelado') return 'Cancelado';
-    return status;
+    return status.charAt(0).toUpperCase() + status.slice(1); // Deixa a primeira letra maiúscula
   };
 
   if (loading) return <p>Carregando histórico...</p>;
@@ -95,7 +93,7 @@ export default function HistoricoPage() {
       <div className={styles.filterTabs}>
         <button onClick={() => setFiltroAtivo('todos')} className={filtroAtivo === 'todos' ? styles.activeTab : ''}>Todos</button>
         <button onClick={() => setFiltroAtivo('finalizado')} className={filtroAtivo === 'finalizado' ? styles.activeTab : ''}>Finalizados</button>
-        <button onClick={() => setFiltroAtivo('aceito')} className={filtroAtivo === 'aceito' ? styles.activeTab : ''}>Aceitos</button>
+        <button onClick={() => setFiltroAtivo('aceito_tecnico')} className={filtroAtivo === 'aceito_tecnico' ? styles.activeTab : ''}>Aceitos</button>
         <button onClick={() => setFiltroAtivo('recusado_tecnico')} className={filtroAtivo === 'recusado_tecnico' ? styles.activeTab : ''}>Recusados</button>
         <button onClick={() => setFiltroAtivo('cancelado')} className={filtroAtivo === 'cancelado' ? styles.activeTab : ''}>Cancelados</button>
       </div>

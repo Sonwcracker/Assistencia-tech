@@ -2,11 +2,11 @@
 .layoutContainer {
   display: flex;
   min-height: calc(100vh - 84px);
-  background-color: #f8f9fa;
+  background-color: #eee;
 }
 .sidebar {
   width: 260px;
-  background-color: #fff;
+  background-color: #007bff;
   border-right: 1px solid #e9ecef;
   padding: 2rem 1rem;
   flex-shrink: 0;
@@ -16,6 +16,7 @@
   padding: 0 1rem 1.5rem 1rem;
   border-bottom: 1px solid #eee;
   margin-bottom: 1.5rem;
+  color: #fff;
 }
 .nav {
   display: flex;
@@ -29,11 +30,11 @@
   padding: 0.8rem 1.5rem;
   border-radius: 8px;
   text-decoration: none;
-  color: #333;
+  color: #fff;
   font-weight: 500;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .navItem svg { font-size: 1.4rem; }
-.navItem:hover { background-color: #e9ecef; }
+.navItem:hover { background-color: #e9ecef; color: #007bff; }
 .navItem.active { background-color: #eaf3ff; color: #007bff; }
 .mainContent { flex: 1; padding: 2rem 4rem; overflow-y: auto; }
