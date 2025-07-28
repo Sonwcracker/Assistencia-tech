@@ -22,7 +22,7 @@ export default function ProfissionalInfoPage() {
   const [profissoesList, setProfissoesList] = useState<ProfissaoOption[]>([]);
   const [isCompetencyModalOpen, setIsCompetencyModalOpen] = useState(false);
   const [availableCompetencies, setAvailableCompetencies] = useState<string[]>([]);
-  const [tempCompetencies, setTempCompetencies] = useState<string[]>([]); // Estado temporário para o modal
+  const [tempCompetencies, setTempCompetencies] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -74,9 +74,28 @@ export default function ProfissionalInfoPage() {
     });
   };
 
-  const handleSaveCompetencies = () => {
-    setProfessionalData(prev => ({ ...prev, competencias: tempCompetencies }));
-    setIsCompetencyModalOpen(false);
+  // FUNÇÃO CORRIGIDA
+  const handleSaveCompetencies = async () => {
+    if (!user) return;
+    
+    // 1. Atualiza o estado local para a UI refletir a mudança imediatamente
+    const updatedData = { ...professionalData, competencias: tempCompetencies };
+    setProfessionalData(updatedData);
+    
+    // 2. Salva o novo array de competências no Firebase
+    const docRef = doc(db, 'usuarios', user.uid);
+    try {
+      await updateDoc(docRef, {
+        competencias: tempCompetencies
+      });
+      setOriginalData(updatedData); // Atualiza os dados originais após salvar
+      setIsCompetencyModalOpen(false); // Fecha o modal
+      alert("Competências salvas com sucesso!");
+    } catch (error) {
+      console.error("Erro ao salvar competências:", error);
+      alert("Erro ao salvar as competências.");
+      setProfessionalData(originalData); // Reverte para os dados originais em caso de erro
+    }
   };
   
   const openCompetencyModal = () => {

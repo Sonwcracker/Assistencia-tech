@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import styles from './profile.module.css'; // O nome do seu CSS module é 'profile.module.css'
+import styles from './profile.module.css';
 import { db } from '@/lib/firebase';
 import {
   doc,
@@ -20,6 +20,7 @@ import { IoArrowBackOutline, IoMailOutline, IoCallOutline, IoLocationOutline } f
 import { useAuth } from '@/context/AuthContext';
 import Modal from '@/components/Modal';
 
+// Interface atualizada para incluir 'competencias'
 interface Freelancer {
   nome: string;
   sobrenome: string;
@@ -29,7 +30,7 @@ interface Freelancer {
   descricao: string;
   profissao: string;
   foto?: string;
-  experiencias?: string;
+  competencias?: string[]; // Campo correto para as habilidades
 }
 
 export default function FreelancerProfilePage() {
@@ -41,11 +42,9 @@ export default function FreelancerProfilePage() {
   const [freelancerData, setFreelancerData] = useState<Freelancer | null>(null);
   const [loading, setLoading] = useState(true);
   
-  // Modal do formulário de contratação
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [formData, setFormData] = useState({ titulo: '', motivo: '' });
 
-  // Novo modal para aviso de login
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useEffect(() => {
@@ -54,7 +53,9 @@ export default function FreelancerProfilePage() {
         try {
           const docRef = doc(db, 'usuarios', freelancerId);
           const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) setFreelancerData(docSnap.data() as Freelancer);
+          if (docSnap.exists()) {
+            setFreelancerData(docSnap.data() as Freelancer);
+          }
         } catch (error) {
           console.error("Erro ao buscar dados:", error);
         } finally {
@@ -74,11 +75,24 @@ export default function FreelancerProfilePage() {
     if (!user || !freelancerData) return;
 
     try {
-      // ... (lógica de submit do formulário, sem alterações)
+      // Verifica se já existe uma solicitação aberta
+      const q = query(
+        collection(db, 'solicitacoes'),
+        where('cliente_id', '==', user.uid),
+        where('tecnico_id', '==', freelancerId),
+        where('status', '==', 'aberto')
+      );
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        alert('Você já possui uma solicitação em aberto com este profissional.');
+        return;
+      }
+
+      // Cria a nova solicitação
       await addDoc(collection(db, 'solicitacoes'), {
         cliente_id: user.uid,
         tecnico_id: freelancerId,
-        nome: freelancerData.nome,
+        nome: freelancerData.nome, // Salva o nome do técnico para referência
         email: freelancerData.email,
         profissao_solicitada: freelancerData.profissao,
         titulo: formData.titulo,
@@ -96,15 +110,14 @@ export default function FreelancerProfilePage() {
     }
   };
 
-  // LÓGICA DO BOTÃO "CONTRATAR" ATUALIZADA
   const handleContratarClick = async () => {
-    // 1. Se o usuário NÃO estiver logado, abre o modal de aviso
+    // Se o usuário NÃO estiver logado, abre o modal de aviso
     if (!user) {
       setIsLoginModalOpen(true);
       return;
     }
 
-    // 2. Se ESTIVER logado, continua com a lógica original
+    // Se ESTIVER logado, continua com a lógica original
     try {
       const q = query(
         collection(db, 'solicitacoes'),
@@ -136,7 +149,7 @@ export default function FreelancerProfilePage() {
     );
   }
 
-  const imagemSrc = freelancerData.foto && freelancerData.foto.startsWith('http') ? freelancerData.foto : '/images/placeholder.png';
+  const imagemSrc = freelancerData.foto && freelancerData.foto.startsWith('http') ? freelancerData.foto : '/images/placeholder.jpg';
 
   return (
     <>
@@ -162,8 +175,18 @@ export default function FreelancerProfilePage() {
           <div className={styles.rightColumn}>
             <h2>Sobre Mim</h2>
             <p className={styles.description}>{freelancerData.descricao || 'Nenhuma descrição fornecida.'}</p>
-            <h2>Experiências</h2>
-            <p className={styles.experiences}>{freelancerData.experiencias || 'Nenhuma experiência informada.'}</p>
+            
+            <h2>Competências</h2>
+            <div className={styles.competenciesContainer}>
+                {Array.isArray(freelancerData.competencias) && freelancerData.competencias.length > 0 ? (
+                    freelancerData.competencias.map((comp, index) => (
+                        <span key={index} className={styles.competencyTag}>{comp}</span>
+                    ))
+                ) : (
+                    <p>Nenhuma competência informada.</p>
+                )}
+            </div>
+
             <div className={styles.contactInfo}>
               <h3>Informações de Contato</h3>
               <div className={styles.infoItem}>
@@ -179,28 +202,26 @@ export default function FreelancerProfilePage() {
         </div>
       </div>
 
-      {/* Modal do Formulário de Contratação */}
       <Modal isOpen={isFormModalOpen} onClose={() => setIsFormModalOpen(false)}>
         <div className={styles.modalContent}>
           <h2>Formulário de Contratação</h2>
           <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
             <label>
-              Título:
+              Título do Serviço:
               <input type="text" name="titulo" value={formData.titulo} onChange={handleInputChange} required />
             </label>
             <label>
-              Motivo:
+              Descreva o que você precisa:
               <textarea name="motivo" value={formData.motivo} onChange={handleInputChange} rows={4} required />
             </label>
             <div className={styles.modalActions}>
               <button type="button" className={styles.modalButtonCancel} onClick={() => setIsFormModalOpen(false)}>Cancelar</button>
-              <button type="submit" className={styles.modalButtonConfirm}>Enviar</button>
+              <button type="submit" className={styles.modalButtonConfirm}>Enviar Solicitação</button>
             </div>
           </form>
         </div>
       </Modal>
 
-      {/* NOVO MODAL DE AVISO DE LOGIN */}
       <Modal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)}>
         <div className={styles.modalContent}>
           <h2>Login Necessário</h2>
