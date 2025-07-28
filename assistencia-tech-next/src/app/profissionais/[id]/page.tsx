@@ -136,7 +136,7 @@ export default function FreelancerProfilePage() {
     );
   }
 
-  const imagemSrc = freelancerData.foto && freelancerData.foto.startsWith('http') ? freelancerData.foto : '/images/placeholder.jpg';
+  const imagemSrc = freelancerData.foto && freelancerData.foto.startsWith('http') ? freelancerData.foto : '/images/placeholder.png';
 
   return (
     <>
