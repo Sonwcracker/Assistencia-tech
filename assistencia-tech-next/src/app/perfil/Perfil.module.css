@@ -2,20 +2,15 @@
   text-align: center;
   padding: 2rem 0;
 }
-
 .profileImage {
   border-radius: 50%;
   margin-bottom: 1rem;
-  height: 200px;
-  width: 200px;
 }
-
 .welcomeTitle {
   font-size: 2.5rem;
   font-weight: bold;
   color: #222;
 }
-
 .welcomeSubtitle {
   font-size: 1.1rem;
   color: #555;
@@ -24,43 +19,8 @@
   margin-left: auto;
   margin-right: auto;
 }
-
 .loading {
   padding: 2rem;
   font-style: italic;
   color: #888;
-}
-.infoGrid {
-  margin-top: 3rem;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
-.infoCard {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 2rem;
-  border: 1px solid #e9ecef;
-}
-.infoCard h3 {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 1rem;
-}
-.infoCard p {
-  color: #555;
-  margin-bottom: 1rem;
-}
-.cpfRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.eyeButton {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  color: #555;
 }
