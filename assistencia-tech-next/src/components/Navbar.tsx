@@ -1,3 +1,4 @@
+// Atualização 1: Navbar com link correto para allProfissionais
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -21,12 +22,7 @@ export default function Navbar() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setIsAtTop(currentScrollY < 50);
-
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
+      setIsVisible(currentScrollY <= lastScrollY || currentScrollY <= 100);
       setLastScrollY(currentScrollY);
     };
 
@@ -43,8 +39,7 @@ export default function Navbar() {
   const isTecnico = userData?.tipo === 'tecnico';
   const servicosLinkHref = isTecnico ? '/chamados' : '/servicos';
   const servicosLinkText = isTecnico ? 'Chamados' : 'Serviços';
-  
-  // Lógica para escolher a imagem e a classe
+
   const showWhiteLogo = isHomePage && isAtTop;
   const logoSrc = showWhiteLogo ? '/logoBranca.png' : '/logoAzul.png';
   const logoClass = showWhiteLogo ? styles.logoImageAtTop : styles.logoImageDefault;
@@ -56,35 +51,28 @@ export default function Navbar() {
           <Image
             src={logoSrc}
             alt="Logo da Servify"
-            width={500} 
-            height={500} 
-            className={logoClass} // Usa a classe dinâmica
+            width={500}
+            height={500}
+            className={logoClass}
             priority
           />
         </Link>
         <nav className={styles.nav}>
           <ul className={styles.navList}>
             <li><Link href="/" className={styles.navLink}>Início</Link></li>
-            <li><Link href="/profissionais" className={styles.navLink}>Profissionais</Link></li>
-            <li>
-              <Link href={servicosLinkHref} className={styles.navLink}>
-                {servicosLinkText}
-              </Link>
-            </li>
+            <li><Link href="/allProfessionals" className={styles.navLink}>Profissionais</Link></li>
+            <li><Link href={servicosLinkHref} className={styles.navLink}>{servicosLinkText}</Link></li>
             <li><Link href="/assinatura" className={styles.navLink}>Assinatura</Link></li>
             <li><Link href="/sobre" className={styles.navLink}>Sobre</Link></li>
           </ul>
         </nav>
-        
         <div className={styles.actionsContainer}>
           {loading ? (
             <div className={styles.loader}></div>
           ) : user ? (
             <ProfileMenu />
           ) : (
-            <Link href="/login" className={styles.loginButton}>
-              Entrar
-            </Link>
+            <Link href="/login" className={styles.loginButton}>Entrar</Link>
           )}
         </div>
       </div>
