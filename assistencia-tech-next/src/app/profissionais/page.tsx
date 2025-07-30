@@ -62,8 +62,7 @@ export default function ProfissaoPage() {
 
   return (
     <div className={styles.pageContainer}>
-      <img src={profissao.banner} alt="Banner Profissão" className={styles.bannerImagem} />
-
+      <section className={styles.header}></section>
       <div className={styles.descricaoContainer}>
         <p className={styles.descricao}>{profissao.descricao}</p>
         <h2 className={styles.subtitulo}>Sobre a Profissão</h2>

@@ -57,7 +57,7 @@ export default function FreelancerGrid({ allFreelancers, allProfessions, onFilte
   return (
     <div className={styles.contentContainer}>
       <div className={styles.filterBar}>
-        <label htmlFor="profession-filter">Classificar por:</label>
+        <label htmlFor="profession-filter">Classificar por:  </label>
         <select
           id="profession-filter"
           className={styles.filterSelect}

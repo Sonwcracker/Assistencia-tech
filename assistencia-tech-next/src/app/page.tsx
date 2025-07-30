@@ -4,21 +4,20 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './home.module.css';
-
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { IoShieldCheckmarkOutline, IoFlashOutline, IoMapOutline, IoChatbubblesOutline, IoDiamondOutline, IoTrendingUpOutline } from 'react-icons/io5';
 
 interface Profissao {
   id: string;
   nome: string;
-  imagem: string;
 }
 
-const ITENS_POR_PAGINA = 3;
+const ITENS_INICIAIS = 5; // Mostra 5 botões inicialmente
 
 export default function HomePage() {
   const [profissoes, setProfissoes] = useState<Profissao[]>([]);
-  const [visibleCount, setVisibleCount] = useState(ITENS_POR_PAGINA);
+  const [visibleCount, setVisibleCount] = useState(ITENS_INICIAIS);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,8 +30,7 @@ export default function HomePage() {
         const profissoesData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           nome: doc.data().nome,
-          imagem: doc.data().imagem || '',
-        }));
+        })) as Profissao[];
 
         setProfissoes(profissoesData);
       } catch (error) {
@@ -41,16 +39,15 @@ export default function HomePage() {
         setLoading(false);
       }
     };
-
     getProfissoes();
   }, []);
 
   const handleVerMais = () => {
-    setVisibleCount(prev => prev + ITENS_POR_PAGINA);
+    setVisibleCount(profissoes.length); // Mostra todos
   };
 
   const handleVerMenos = () => {
-    setVisibleCount(ITENS_POR_PAGINA);
+    setVisibleCount(ITENS_INICIAIS);
   };
 
   const isShowingAll = visibleCount >= profissoes.length;
@@ -59,102 +56,88 @@ export default function HomePage() {
     <main className={styles.mainContent}>
       <section className={styles.hero}>
         <div className={styles.container}>
-          <h2 className={styles.heroTitle}>Contrate os melhores serviços</h2>
+          <h1 className={styles.heroTitle}>Encontre o profissional certo para o serviço que você precisa.</h1>
           <p className={styles.heroText}>
-            Nossa plataforma conecta profissionais de diversas áreas com clientes que precisam de soluções rápidas,
-            acessíveis e confiáveis para o dia a dia.
+            Conectamos você a especialistas qualificados de forma rápida, segura e sem complicações.
           </p>
-          <div className="btn-group">
-            <Link href="/sobre" className={styles.navLink}>
-              <button className={`${styles.btn} ${styles.btnPrimary}`}>Saber mais</button>
-            </Link>
-          </div>
+          <Link href="/allProfessionals" className={`${styles.btn} ${styles.btnHeader}`}>
+            Encontrar Profissionais
+          </Link>
         </div>
       </section>
 
       <section className={styles.popular}>
         <div className={styles.container}>
-          <p className={styles.sectionSubtitle}>Encontrar profissionais</p>
+          <p className={styles.sectionSubtitle}>Navegue por Categorias</p>
           <h2 className={styles.sectionTitle}>Serviços Oferecidos</h2>
-          <p className={styles.sectionText}>Serviços separados por categorias</p>
-
+          
           {loading ? (
-            <p>Carregando profissões...</p>
+            <p>Carregando...</p>
           ) : (
             <>
-              <ul className={styles.popularList}>
+              <div className={`${styles.botoesProfissoes} ${isShowingAll ? styles.expanded : ''}`}>
                 {profissoes.slice(0, visibleCount).map((profissao) => (
-                  <li key={profissao.id}>
-                    <Link href={`/profissionais?filtro=${profissao.id}`}>
-                      <div className={styles.popularCard}>
-                        <figure className={styles.cardImg}>
-                          <Image
-                            src={profissao.imagem || '/images/placeholder.png'}
-                            alt={`Imagem da profissão ${profissao.nome}`}
-                            width={200}
-                            height={150}
-                            className={styles.image}
-                          />
-                        </figure>
-                        <div className={styles.cardContent}>
-                          <h3 className={styles.cardTitle}>{profissao.nome}</h3>
-                        </div>
-                      </div>
-                    </Link>
-                  </li>
+                  <Link 
+                    key={profissao.id} 
+                    href={`/profissionais?filtro=${profissao.id}`} 
+                    className={styles.botaoProfissao}
+                  >
+                    {profissao.nome}
+                  </Link>
                 ))}
-              </ul>
+              </div>
 
               <div className={styles.buttonContainer}>
-                {isShowingAll && profissoes.length > ITENS_POR_PAGINA && (
+                {isShowingAll && profissoes.length > ITENS_INICIAIS ? (
                   <button onClick={handleVerMenos} className={`${styles.btn} ${styles.btnSecondary}`}>
                     Ver menos
                   </button>
-                )}
-
-                {!isShowingAll && profissoes.length > 0 && (
+                ) : !isShowingAll && profissoes.length > ITENS_INICIAIS ? (
                   <button onClick={handleVerMais} className={`${styles.btn} ${styles.btnPrimary}`}>
                     Ver mais serviços
                   </button>
-                )}
+                ) : null}
               </div>
             </>
           )}
         </div>
       </section>
 
-      {/* NOVA SEÇÃO DE VANTAGENS */}
       <section className={styles.vantagensSection}>
         <div className={styles.container}>
-          <h2 className={styles.sectionTitle}>Por que escolher nossa plataforma?</h2>
-          <p className={styles.sectionText}>
-            Veja os principais benefícios que fazem do nosso site a melhor escolha para contratar ou oferecer serviços.
-          </p>
-
+          <p className={styles.sectionSubtitle}>Nossos Diferenciais</p>
+          <h2 className={styles.sectionTitle}>Por que escolher a Servify?</h2>
+          
           <div className={styles.vantagensGrid}>
             <div className={styles.vantagemItem}>
-              <h3>🔒 Segurança</h3>
-              <p>Contamos com autenticação segura e verificação de profissionais cadastrados.</p>
+              <IoShieldCheckmarkOutline className={styles.vantagemIcon} />
+              <h3>Segurança e Confiança</h3>
+              <p>Profissionais verificados e um sistema de avaliações transparente para você contratar com tranquilidade.</p>
             </div>
             <div className={styles.vantagemItem}>
-              <h3>📱 Facilidade</h3>
-              <p>Encontre profissionais e serviços em poucos cliques, com acesso simples e rápido.</p>
+              <IoFlashOutline className={styles.vantagemIcon} />
+              <h3>Agilidade</h3>
+              <p>Receba orçamentos em minutos e encontre a solução para o seu problema sem burocracia.</p>
             </div>
             <div className={styles.vantagemItem}>
-              <h3>🌎 Alcance Local</h3>
-              <p>Conectamos você com profissionais próximos, otimizando tempo e deslocamento.</p>
+              <IoChatbubblesOutline className={styles.vantagemIcon} />
+              <h3>Comunicação Direta</h3>
+              <p>Converse diretamente com os profissionais para alinhar todos os detalhes do serviço.</p>
             </div>
             <div className={styles.vantagemItem}>
-              <h3>💬 Avaliações reais</h3>
-              <p>Leia opiniões de outros clientes para escolher com confiança e transparência.</p>
+              <IoDiamondOutline className={styles.vantagemIcon} />
+              <h3>Qualidade Garantida</h3>
+              <p>Nossa plataforma seleciona os melhores talentos para garantir um serviço de alta qualidade.</p>
             </div>
             <div className={styles.vantagemItem}>
-              <h3>📈 Oportunidade para profissionais</h3>
-              <p>Divulgue seus serviços, ganhe visibilidade e conquiste novos clientes.</p>
+              <IoTrendingUpOutline className={styles.vantagemIcon} />
+              <h3>Oportunidade de Crescimento</h3>
+              <p>Para profissionais, oferecemos uma vitrine para alcançar mais clientes e expandir seu negócio.</p>
             </div>
             <div className={styles.vantagemItem}>
-              <h3>⚙️ Gestão de serviços</h3>
-              <p>Organize seus pedidos, receba notificações e acompanhe tudo pela plataforma.</p>
+              <IoMapOutline className={styles.vantagemIcon} />
+              <h3>Conexão Local</h3>
+              <p>Encontre especialistas na sua região, otimizando tempo e fortalecendo a comunidade local.</p>
             </div>
           </div>
         </div>

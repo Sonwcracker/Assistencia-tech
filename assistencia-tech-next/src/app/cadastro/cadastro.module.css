@@ -99,6 +99,7 @@
 }
 
 /* Painel de CTA (Call to Action) */
+/* --- PAINEL DE CTA (AZUL) - CORRIGIDO --- */
 .ctaPanel {
   flex-basis: 40%;
   display: flex;
@@ -107,9 +108,45 @@
   align-items: center;
   padding: 40px;
   text-align: center;
-  background-color: #007bff;
+  background-color: #0180ff; /* Cor azul padrão */
+  color: #fff; /* Texto branco */
 }
 
+.ctaIcon {
+  font-size: 4rem; /* Ícone maior */
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.ctaPanel h3 {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.ctaPanel p {
+  max-width: 300px;
+  color: rgba(255, 255, 255, 0.9); /* Branco com leve transparência */
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.switchButton {
+  padding: 12px 25px;
+  border-radius: 8px;
+  border: 2px solid #fff;
+  background: transparent;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.switchButton:hover {
+  background-color: #fff;
+  color: #0180ff; /* Cor do texto no hover */
+}
 /* Botões de navegação das etapas */
 .stepNav {
   display: flex;
@@ -283,7 +320,6 @@
   border: 3px solid #eee;
 }
 
-/* Adicione estes estilos ao final do seu CSS */
 
 .passwordWrapper {
   position: relative;

@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation'; 
-
-import styles from '../profissionais/profissionais.module.css';
+import { useSearchParams } from 'next/navigation';
+import styles from './allProfissionais.module.css'; // <-- CORREÇÃO APLICADA AQUI
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import FreelancerGrid from '../../components/FreeLancerGrid';

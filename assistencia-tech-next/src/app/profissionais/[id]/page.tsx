@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import styles from './profile.module.css';
-import { db } from '@/lib/firebase';
+import { db, auth } from '@/lib/firebase';
 import {
   doc,
   getDoc,
@@ -14,13 +14,14 @@ import {
   where,
   getDocs,
 } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import { IoArrowBackOutline, IoMailOutline, IoCallOutline, IoLocationOutline } from 'react-icons/io5';
 import { useAuth } from '@/context/AuthContext';
 import Modal from '@/components/Modal';
 
-// Interface atualizada para incluir 'competencias'
+// Interface para os dados do Freelancer
 interface Freelancer {
   nome: string;
   sobrenome: string;
@@ -30,22 +31,25 @@ interface Freelancer {
   descricao: string;
   profissao: string;
   foto?: string;
-  competencias?: string[]; // Campo correto para as habilidades
+  competencias?: string[];
 }
 
 export default function FreelancerProfilePage() {
   const router = useRouter();
   const params = useParams();
   const freelancerId = params.id as string;
-  const { user } = useAuth();
+  const { user, userData } = useAuth(); // Pegamos também o userData para verificar o tipo
 
   const [freelancerData, setFreelancerData] = useState<Freelancer | null>(null);
   const [loading, setLoading] = useState(true);
   
+  // Estados para os modais
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [formData, setFormData] = useState({ titulo: '', motivo: '' });
-
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isAccountTypeModalOpen, setIsAccountTypeModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isExistingRequestModalOpen, setIsExistingRequestModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchFreelancer() {
@@ -61,6 +65,8 @@ export default function FreelancerProfilePage() {
         } finally {
           setLoading(false);
         }
+      } else {
+          setLoading(false);
       }
     }
     fetchFreelancer();
@@ -73,26 +79,11 @@ export default function FreelancerProfilePage() {
 
   const handleSubmit = async () => {
     if (!user || !freelancerData) return;
-
     try {
-      // Verifica se já existe uma solicitação aberta
-      const q = query(
-        collection(db, 'solicitacoes'),
-        where('cliente_id', '==', user.uid),
-        where('tecnico_id', '==', freelancerId),
-        where('status', '==', 'aberto')
-      );
-      const snapshot = await getDocs(q);
-      if (!snapshot.empty) {
-        alert('Você já possui uma solicitação em aberto com este profissional.');
-        return;
-      }
-
-      // Cria a nova solicitação
       await addDoc(collection(db, 'solicitacoes'), {
         cliente_id: user.uid,
         tecnico_id: freelancerId,
-        nome: freelancerData.nome, // Salva o nome do técnico para referência
+        nome: freelancerData.nome,
         email: freelancerData.email,
         profissao_solicitada: freelancerData.profissao,
         titulo: formData.titulo,
@@ -100,10 +91,10 @@ export default function FreelancerProfilePage() {
         data_criacao: serverTimestamp(),
         status: 'aberto',
       });
-
       setIsFormModalOpen(false);
       setFormData({ titulo: '', motivo: '' });
-      alert('Solicitação enviada com sucesso!');
+      setIsSuccessModalOpen(true);
+      setTimeout(() => setIsSuccessModalOpen(false), 3000);
     } catch (error) {
       console.error('Erro ao enviar solicitação:', error);
       alert('Erro ao enviar solicitação.');
@@ -111,13 +102,14 @@ export default function FreelancerProfilePage() {
   };
 
   const handleContratarClick = async () => {
-    // Se o usuário NÃO estiver logado, abre o modal de aviso
     if (!user) {
       setIsLoginModalOpen(true);
       return;
     }
-
-    // Se ESTIVER logado, continua com a lógica original
+    if (userData?.tipo === 'tecnico') {
+      setIsAccountTypeModalOpen(true);
+      return;
+    }
     try {
       const q = query(
         collection(db, 'solicitacoes'),
@@ -126,17 +118,21 @@ export default function FreelancerProfilePage() {
         where('status', '==', 'aberto')
       );
       const snapshot = await getDocs(q);
-
       if (!snapshot.empty) {
-        alert('Você já possui uma solicitação em aberto com este profissional.');
+        setIsExistingRequestModalOpen(true);
         return;
       }
-
-      setIsFormModalOpen(true); // Abre o formulário de contratação
+      setIsFormModalOpen(true);
     } catch (error) {
       console.error('Erro ao verificar solicitações:', error);
       alert('Erro ao verificar solicitações.');
     }
+  };
+  
+  const handleSwitchAccount = () => {
+    signOut(auth).then(() => {
+        router.push('/login');
+    });
   };
 
   if (loading) return <div className={styles.profileContainer}>Carregando perfil...</div>;
@@ -149,7 +145,7 @@ export default function FreelancerProfilePage() {
     );
   }
 
-  const imagemSrc = freelancerData.foto && freelancerData.foto.startsWith('http') ? freelancerData.foto : '/images/placeholder.jpg';
+  const imagemSrc = freelancerData.foto && freelancerData.foto.startsWith('http') ? freelancerData.foto : '/images/placeholder.png';
 
   return (
     <>
@@ -171,11 +167,9 @@ export default function FreelancerProfilePage() {
             </div>
             <button onClick={handleContratarClick} className={styles.ctaButton}>Contratar</button>
           </div>
-
           <div className={styles.rightColumn}>
             <h2>Sobre Mim</h2>
             <p className={styles.description}>{freelancerData.descricao || 'Nenhuma descrição fornecida.'}</p>
-            
             <h2>Competências</h2>
             <div className={styles.competenciesContainer}>
                 {Array.isArray(freelancerData.competencias) && freelancerData.competencias.length > 0 ? (
@@ -186,7 +180,6 @@ export default function FreelancerProfilePage() {
                     <p>Nenhuma competência informada.</p>
                 )}
             </div>
-
             <div className={styles.contactInfo}>
               <h3>Informações de Contato</h3>
               <div className={styles.infoItem}>
@@ -231,6 +224,37 @@ export default function FreelancerProfilePage() {
             <button type="button" className={styles.modalButtonConfirm} onClick={() => router.push('/login')}>Fazer Login</button>
           </div>
         </div>
+      </Modal>
+      
+      <Modal isOpen={isAccountTypeModalOpen} onClose={() => setIsAccountTypeModalOpen(false)}>
+        <div className={styles.modalContent}>
+          <h2>Ação não permitida</h2>
+          <p>Contas de profissionais não podem contratar serviços. Por favor, troque de conta ou crie uma conta de cliente para continuar.</p>
+          <div className={styles.modalActions}>
+            <button type="button" className={styles.modalButtonCancel} onClick={() => setIsAccountTypeModalOpen(false)}>Cancelar</button>
+            <button type="button" className={styles.modalButtonConfirm} onClick={handleSwitchAccount}>Trocar de Conta</button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isExistingRequestModalOpen} onClose={() => setIsExistingRequestModalOpen(false)}>
+        <div className={styles.modalContent}>
+          <h2>Aviso</h2>
+          <p>Você já possui uma solicitação em aberto com este profissional.</p>
+          <div className={styles.modalActions}>
+            <button type="button" className={styles.modalButtonConfirm} onClick={() => setIsExistingRequestModalOpen(false)}>Ok</button>
+          </div>
+        </div>
+      </Modal>
+      
+      <Modal isOpen={isSuccessModalOpen} onClose={() => setIsSuccessModalOpen(false)}>
+          <div className={styles.modalContent}>
+              <h2>Solicitação Enviada!</h2>
+              <p>Sua solicitação foi enviada para o profissional. Aguarde o contato dele.</p>
+              <div className={styles.modalActions}>
+                  <button type="button" className={styles.modalButtonConfirm} onClick={() => setIsSuccessModalOpen(false)}>Ok</button>
+              </div>
+          </div>
       </Modal>
     </>
   );
