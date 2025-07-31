@@ -9,7 +9,8 @@ export interface UserData {
   foto?: string;
   profissao?: string;
   descricao?: string;
- experiencias?: string[]; // ← alterado para array
+  experiencias?: string[];
+  competencias?: string[];
 }
 
 export interface Solicitacao {
@@ -17,7 +18,7 @@ export interface Solicitacao {
   cliente_id: string;
   nomeCliente?: string;
   tecnico_id?: string;
-  nomeProfissional?: string; 
+  nomeProfissional?: string;
   profissao_solicitada: string;
   descricao: string;
   data_criacao: Date;

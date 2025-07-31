@@ -157,6 +157,8 @@
 
 .prevButton,
 .nextButton,
+.prevButton, 
+.saveButton, 
 .submitButton {
   padding: 12px 25px;
   border-radius: 8px;
@@ -166,7 +168,7 @@
   transition: opacity 0.3s;
 }
 
-.prevButton {
+.prevButton, .saveButton {
   background-color: #6c757d;
   color: #fff;
 }

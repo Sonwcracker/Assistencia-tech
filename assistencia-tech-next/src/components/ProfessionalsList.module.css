@@ -1,50 +1,8 @@
-/* Estilo geral da página */
-.pageContainer {
-  background-color: #f8f9fa;
-  color: #333;
-  min-height: 100vh;
-  padding: 2rem 4rem;
-}
-
-.header {
-  margin-bottom: 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.pageTitle {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #222;
-  text-transform: capitalize;
-}
-
-.filterContainer {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.filterLabel {
-  font-weight: 500;
-  color: #555;
-}
-
-.filterSelect {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
 /* Grade de Cards */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
+  gap: 2rem; /* Aumentei o espaçamento */
   margin-top: 2rem;
 }
 
@@ -68,7 +26,7 @@
 
 .cardImageContainer {
   width: 100%;
-  height: 200px;
+  height: 250px; /* Diminuí um pouco a altura da imagem */
   position: relative;
   background-color: #f0f0f0;
 }
@@ -81,7 +39,7 @@
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
+  flex-grow: 1; /* Faz o conteúdo crescer para preencher o card */
 }
 
 .cardTitle {
@@ -116,6 +74,7 @@
 .viewProfileButton {
   display: block;
   text-align: center;
+  margin-top: auto; /* Empurra o botão para o final do card */
   padding: 0.75rem;
   background-color: #eaf3ff;
   color: #007bff;

@@ -17,6 +17,7 @@ export default function PerfilLayout({ children }: { children: React.ReactNode }
     { href: '/perfil/seguranca', label: 'Segurança', icon: <IoShieldCheckmarkOutline /> },
   ];
 
+  // Adiciona a aba extra SE o usuário for do tipo 'tecnico'
   if (userData?.tipo === 'tecnico') {
     navItems.push({ 
       href: '/perfil/profissional', 

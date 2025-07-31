@@ -7,7 +7,7 @@ import { doc, getDoc, updateDoc, collection, query, getDocs, orderBy } from 'fir
 import styles from './Profissional.module.css';
 import { UserData } from '@/types';
 import Modal from '@/components/Modal';
-import { IoPencil, IoAddCircleOutline } from 'react-icons/io5';
+import { IoPencil } from 'react-icons/io5';
 
 type ProfissaoOption = { id: string; nome: string; };
 
@@ -50,8 +50,10 @@ export default function ProfissionalInfoPage() {
 
   useEffect(() => {
     if (professionalData?.profissao) {
+      const professionId = professionalData.profissao;
+      
       const fetchCompetencies = async () => {
-        const docRef = doc(db, "profissoes", professionalData.profissao);
+        const docRef = doc(db, "profissoes", professionId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setAvailableCompetencies(docSnap.data().experiencias || []);
@@ -74,27 +76,24 @@ export default function ProfissionalInfoPage() {
     });
   };
 
-  // FUNÇÃO CORRIGIDA
   const handleSaveCompetencies = async () => {
     if (!user) return;
     
-    // 1. Atualiza o estado local para a UI refletir a mudança imediatamente
     const updatedData = { ...professionalData, competencias: tempCompetencies };
     setProfessionalData(updatedData);
     
-    // 2. Salva o novo array de competências no Firebase
     const docRef = doc(db, 'usuarios', user.uid);
     try {
       await updateDoc(docRef, {
         competencias: tempCompetencies
       });
-      setOriginalData(updatedData); // Atualiza os dados originais após salvar
-      setIsCompetencyModalOpen(false); // Fecha o modal
+      setOriginalData(updatedData);
+      setIsCompetencyModalOpen(false);
       alert("Competências salvas com sucesso!");
     } catch (error) {
       console.error("Erro ao salvar competências:", error);
       alert("Erro ao salvar as competências.");
-      setProfessionalData(originalData); // Reverte para os dados originais em caso de erro
+      setProfessionalData(originalData);
     }
   };
   
@@ -103,7 +102,7 @@ export default function ProfissionalInfoPage() {
     setIsCompetencyModalOpen(true);
   };
 
-  const handleSave = async (fieldName: string) => {
+  const handleSave = async (fieldName: keyof UserData) => {
     if (user && professionalData) {
       const docRef = doc(db, 'usuarios', user.uid);
       try {
@@ -132,7 +131,7 @@ export default function ProfissionalInfoPage() {
     return <p>Acesso negado ou perfil não encontrado.</p>;
   }
 
-  const renderEditableField = (fieldName: keyof UserData, label: string, as: 'select' | 'textarea' = 'input') => {
+  const renderEditableField = (fieldName: keyof UserData, label: string, as: 'input' | 'select' | 'textarea' = 'input') => {
     const isBeingEdited = editingField === fieldName;
     const currentProfessionName = profissoesList.find(p => p.id === professionalData.profissao)?.nome || 'Não definida';
 
@@ -142,6 +141,15 @@ export default function ProfissionalInfoPage() {
         <div className={styles.valueContainer}>
           {isBeingEdited ? (
             <>
+              {as === 'input' && (
+                  <input
+                    type="text"
+                    name={fieldName}
+                    value={professionalData[fieldName] as string || ''}
+                    onChange={handleInputChange}
+                    className={styles.inputEdit}
+                  />
+              )}
               {as === 'select' && (
                 <select name="profissao" value={professionalData.profissao || ''} onChange={handleInputChange} className={styles.inputEdit}>
                     <option value="">Selecione sua profissão</option>
@@ -190,7 +198,8 @@ export default function ProfissionalInfoPage() {
           <span className={styles.label}>Competências</span>
           <div className={styles.value}>
             <div className={styles.competencyTags}>
-              {professionalData.competencias?.length > 0 ? (
+              {/* ▼▼▼ CORREÇÃO APLICADA AQUI ▼▼▼ */}
+              {professionalData.competencias && professionalData.competencias.length > 0 ? (
                 professionalData.competencias.map(comp => (
                   <span key={comp} className={styles.competencyTag}>{comp}</span>
                 ))

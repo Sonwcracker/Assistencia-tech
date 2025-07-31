@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from '@/lib/firebase'; 
+import { auth, db } from '@/lib/firebase';
 import styles from "./login.module.css";
 
 export default function LoginPage() {
@@ -36,8 +36,13 @@ export default function LoginPage() {
         setErro("Usuário não encontrado no banco.");
       }
 
-    } catch (error: any) {
-      console.error("Erro no login:", error.message);
+    } catch (error: unknown) { // 1. Mude de 'any' para 'unknown'
+      // 2. Verifique o tipo do erro antes de usá-lo
+      if (error instanceof Error) {
+        console.error("Erro no login:", error.message);
+      } else {
+        console.error("Um erro inesperado ocorreu:", error);
+      }
       setErro("Email ou senha inválidos.");
     }
   };

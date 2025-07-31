@@ -47,7 +47,10 @@ export default function InformacoesPage() {
     setUserData(prev => ({ ...prev, [name]: value }));
   };
   
-  const handleSave = async (fieldName: string) => {
+  // ▼▼▼ CORREÇÃO APLICADA AQUI ▼▼▼
+  // A assinatura da função foi alterada de 'fieldName: string' para 'fieldName: keyof UserData'.
+  // Isso garante ao TypeScript que 'fieldName' é uma chave válida de 'UserData', resolvendo o erro.
+  const handleSave = async (fieldName: keyof UserData) => {
     if (user && userData) {
       const docRef = doc(db, 'usuarios', user.uid);
       try {
@@ -125,7 +128,7 @@ export default function InformacoesPage() {
         <span className={styles.label}>{label}</span>
         <div className={styles.valueContainer}>
           {isBeingEdited ? (
-            <input type={type} name={fieldName} value={userData[fieldName] || ''} onChange={handleInputChange} className={styles.inputEdit} autoFocus />
+            <input type={type} name={fieldName} value={userData[fieldName] as string || ''} onChange={handleInputChange} className={styles.inputEdit} autoFocus />
           ) : (
             <span>{userData[fieldName]}</span>
           )}

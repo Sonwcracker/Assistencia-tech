@@ -1,6 +1,5 @@
 'use client';
 
-// CORREÇÃO: Adicionado 'useEffect' à importação do React
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './cadastro.module.css';
@@ -12,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import ProgressBar from '../../components/ProgressBar';
 import { validateCPF } from '../../utils/validators';
 import Modal from '../../components/Modal';
+import { toast } from 'react-hot-toast';
 
 // --- DEFINIÇÃO DE TIPOS ---
 type FormData = {
@@ -23,6 +23,30 @@ type FormData = {
 type PasswordValidation = { length: boolean; uppercase: boolean; lowercase: boolean; number: boolean; };
 type ProfissaoOption = { id: string; nome: string; };
 
+// --- TIPOS PARA PROPS DOS COMPONENTES DE ETAPA ---
+type Step1Props = {
+    formData: Partial<FormData>;
+    handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    passwordValidation: PasswordValidation;
+    showPassword: boolean;
+    toggleShowPassword: () => void;
+};
+
+type Step2Props = {
+    formData: Partial<FormData>;
+    handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    errors: { cpf: string; telefone: string; };
+};
+
+type Step3Props = {
+    formData: Partial<FormData>;
+    handleInputChange: (e: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>) => void;
+    onAddCompetencyClick: () => void;
+    onRemoveCompetency: (competency: string) => void;
+    profissoes: ProfissaoOption[];
+};
+
+
 // --- COMPONENTES DAS ETAPAS ---
 const PasswordRequirement = ({ label, isValid }: { label: string, isValid: boolean }) => (
     <div className={`${styles.requirement} ${isValid ? styles.valid : ''}`}>
@@ -30,7 +54,8 @@ const PasswordRequirement = ({ label, isValid }: { label: string, isValid: boole
         <span>{label}</span>
     </div>
 );
-const Step1_Personal = ({ formData, handleInputChange, passwordValidation, showPassword, toggleShowPassword }: any) => (
+
+const Step1_Personal = ({ formData, handleInputChange, passwordValidation, showPassword, toggleShowPassword }: Step1Props) => (
     <>
         <div className={styles.formRow}>
             <input name="nome" type="text" placeholder="Nome" value={formData.nome || ''} onChange={handleInputChange} required />
@@ -54,7 +79,8 @@ const Step1_Personal = ({ formData, handleInputChange, passwordValidation, showP
         </div>
     </>
 );
-const Step2_ContactAddress = ({ formData, handleInputChange, errors }: any) => (
+
+const Step2_ContactAddress = ({ formData, handleInputChange, errors }: Step2Props) => (
     <>
         <input name="cpf" type="text" placeholder="CPF" value={formData.cpf || ''} onChange={handleInputChange} required />
         {errors.cpf && <p className={styles.errorMessage}>{errors.cpf}</p>}
@@ -68,7 +94,7 @@ const Step2_ContactAddress = ({ formData, handleInputChange, errors }: any) => (
     </>
 );
 
-const Step3_Professional = ({ formData, handleInputChange, onAddCompetencyClick, onRemoveCompetency, profissoes }: any) => (
+const Step3_Professional = ({ formData, handleInputChange, onAddCompetencyClick, onRemoveCompetency, profissoes }: Step3Props) => (
     <>
         <select name="profissao" value={formData.profissao || ''} onChange={handleInputChange} required>
             <option value="">Sua principal profissão</option>
@@ -97,73 +123,12 @@ const Step3_Professional = ({ formData, handleInputChange, onAddCompetencyClick,
 );
 
 // --- FORMULÁRIOS PRINCIPAIS ---
-const ClientForm = ({ onRegister }: { onRegister: Function }) => {
-    const totalSteps = 2;
+const FormWizard = ({ userType, onRegister }: { userType: 'cliente' | 'tecnico', onRegister: (type: 'cliente' | 'tecnico', data: Partial<FormData>) => void }) => {
+    const totalSteps = userType === 'cliente' ? 2 : 3;
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState<Partial<FormData>>({
-        nome: '', sobrenome: '', email: '', senha: '', confirmSenha: '', 
+        nome: '', sobrenome: '', email: '', senha: '', confirmSenha: '',
         cpf: '', telefone: '', cep: '', endereco: '', numero: '',
-    });
-    const [errors, setErrors] = useState({ cpf: '', telefone: '' });
-    const [passwordValidation, setPasswordValidation] = useState<PasswordValidation>({ length: false, uppercase: false, lowercase: false, number: false });
-    const [showPassword, setShowPassword] = useState(false);
-    const toggleShowPassword = () => setShowPassword(!showPassword);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-        if (name === 'senha') {
-            setPasswordValidation({
-                length: value.length >= 8, uppercase: /[A-Z]/.test(value),
-                lowercase: /[a-z]/.test(value), number: /[0-9]/.test(value),
-            });
-        }
-        if (name === 'cpf') setErrors(prev => ({ ...prev, cpf: validateCPF(value) ? '' : 'CPF inválido.' }));
-        if (name === 'telefone') setErrors(prev => ({ ...prev, telefone: /^55\d{10,11}$/.test(value) ? '' : 'Formato inválido.' }));
-    };
-
-    const isStepValid = () => {
-        if (step === 1) return Object.values(passwordValidation).every(Boolean) && (formData.senha && formData.senha === formData.confirmSenha);
-        if (step === 2) return (formData.cpf && validateCPF(formData.cpf) && formData.telefone && /^55\d{10,11}$/.test(formData.telefone) && formData.endereco && formData.endereco.trim() !== '' && formData.numero && formData.numero.trim() !== '');
-        return false;
-    };
-
-    const nextStep = () => { if (isStepValid()) setStep(step + 1); };
-    const prevStep = () => setStep(step - 1);
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (isStepValid()) {
-            onRegister('cliente', formData);
-        }
-    };
-
-    return (
-        <div className={styles.formContainer}>
-            <h2>Criar Conta de Cliente <span className={styles.stepIndicator}>(Etapa {step} de {totalSteps})</span></h2>
-            <ProgressBar currentStep={step} totalSteps={totalSteps} />
-            <form className={styles.form} onSubmit={handleSubmit}>
-                {step === 1 &&
-                    <Step1_Personal {...{ formData, handleInputChange, passwordValidation, showPassword, toggleShowPassword }} />
-                }
-                {step === 2 &&
-                    <Step2_ContactAddress {...{ formData, handleInputChange, errors }} />
-                }
-                <div className={styles.stepNav}>
-                    {step > 1 && <button type="button" onClick={prevStep} className={styles.prevButton}>Anterior</button>}
-                    {step < totalSteps && <button type="button" onClick={nextStep} className={styles.nextButton} disabled={!isStepValid()}>Próximo</button>}
-                    {step === totalSteps && <button type="submit" className={styles.submitButton}>Finalizar Cadastro</button>}
-                </div>
-            </form>
-        </div>
-    );
-};
-
-const FreelancerForm = ({ onRegister }: { onRegister: Function }) => {
-    const totalSteps = 3;
-    const [step, setStep] = useState(1);
-    const [formData, setFormData] = useState<Partial<FormData>>({
-        nome: '', sobrenome: '', email: '', senha: '', confirmSenha: '', 
-        cpf: '', telefone: '', cep: '', endereco: '', numero: '', 
         profissao: '', descricao: '', competencias: []
     });
     const [errors, setErrors] = useState({ cpf: '', telefone: '' });
@@ -174,6 +139,7 @@ const FreelancerForm = ({ onRegister }: { onRegister: Function }) => {
     const [availableCompetencies, setAvailableCompetencies] = useState<string[]>([]);
     const [loadingCompetencies, setLoadingCompetencies] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+
     const toggleShowPassword = () => setShowPassword(!showPassword);
 
     useEffect(() => {
@@ -220,7 +186,9 @@ const FreelancerForm = ({ onRegister }: { onRegister: Function }) => {
             return { ...prev, competencias: [...current, competencyName] };
         });
     };
+
     const filteredCompetencies = availableCompetencies.filter(comp => comp.toLowerCase().includes(searchTerm.toLowerCase()));
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -233,25 +201,27 @@ const FreelancerForm = ({ onRegister }: { onRegister: Function }) => {
         if (name === 'cpf') setErrors(prev => ({ ...prev, cpf: validateCPF(value) ? '' : 'CPF inválido.' }));
         if (name === 'telefone') setErrors(prev => ({ ...prev, telefone: /^55\d{10,11}$/.test(value) ? '' : 'Formato inválido.' }));
     };
+
     const isStepValid = () => {
         if (step === 1) return Object.values(passwordValidation).every(Boolean) && (formData.senha && formData.senha === formData.confirmSenha);
         if (step === 2) return (formData.cpf && validateCPF(formData.cpf) && formData.telefone && /^55\d{10,11}$/.test(formData.telefone) && formData.endereco && formData.endereco.trim() !== '' && formData.numero && formData.numero.trim() !== '');
-        if (step === 3) return !!formData.profissao && !!formData.descricao && formData.descricao.trim() !== '';
+        if (step === 3 && userType === 'tecnico') return !!formData.profissao && !!formData.descricao && formData.descricao.trim() !== '';
         return false;
     };
+
     const nextStep = () => { if (isStepValid()) setStep(step + 1); };
     const prevStep = () => setStep(step - 1);
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (isStepValid()) {
-            onRegister('tecnico', formData);
+            onRegister(userType, formData);
         }
     };
 
     return (
         <>
             <div className={styles.formContainer}>
-                <h2>Seja um Profissional <span className={styles.stepIndicator}>(Etapa {step} de {totalSteps})</span></h2>
+                <h2>{userType === 'cliente' ? 'Criar Conta de Cliente' : 'Seja um Profissional'} <span className={styles.stepIndicator}>(Etapa {step} de {totalSteps})</span></h2>
                 <ProgressBar currentStep={step} totalSteps={totalSteps} />
                 <form onSubmit={handleSubmit} className={styles.form}>
                     {step === 1 &&
@@ -260,7 +230,7 @@ const FreelancerForm = ({ onRegister }: { onRegister: Function }) => {
                     {step === 2 &&
                         <Step2_ContactAddress {...{ formData, handleInputChange, errors }} />
                     }
-                    {step === 3 &&
+                    {step === 3 && userType === 'tecnico' &&
                         <Step3_Professional
                             formData={formData}
                             handleInputChange={handleInputChange}
@@ -301,29 +271,37 @@ const FreelancerForm = ({ onRegister }: { onRegister: Function }) => {
     );
 };
 
+
 // --- COMPONENTE PRINCIPAL DA PÁGINA ---
 export default function CadastroPage() {
     const [isFreelancer, setIsFreelancer] = useState(false);
     const router = useRouter();
+
     const handleRegister = async (type: 'cliente' | 'tecnico', formData: Partial<FormData>) => {
         if (!formData.email || !formData.senha) {
-            alert("Email e senha são obrigatórios.");
+            toast.error('Email e senha são obrigatórios.');
             return;
         }
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.senha);
             const userId = userCredential.user.uid;
-            const { senha, confirmSenha, ...firestoreData } = formData;
+            
+            const { senha: _senha, confirmSenha: _confirmSenha, ...firestoreData } = formData;
             await setDoc(doc(db, 'usuarios', userId), {
                 ...firestoreData,
                 foto: '',
                 tipo: type
             });
-            alert(`Conta de ${type} criada com sucesso!`);
-            router.push('/login');
+            
+            toast.success(`Conta de ${type} criada com sucesso!`);
+
+            setTimeout(() => {
+                router.push('/');
+            }, 2000); 
+
         } catch (error) {
             console.error(error);
-            alert('Erro ao criar conta. Verifique se o e-mail já está em uso.');
+            toast.error('Erro ao criar conta. Verifique se o e-mail já está em uso.');
         }
     };
 
@@ -333,7 +311,7 @@ export default function CadastroPage() {
                 <div className={`${styles.cardInner} ${isFreelancer ? styles.isFlipped : ''}`}>
                     <div className={styles.cardFaceFront}>
                         <div className={styles.formPanel}>
-                            <ClientForm onRegister={handleRegister} />
+                            <FormWizard userType="cliente" onRegister={handleRegister} />
                         </div>
                         <div className={`${styles.ctaPanel} ${styles.ctaPanelRight}`}>
                             <IoBriefcaseOutline className={styles.ctaIcon} />
@@ -350,7 +328,7 @@ export default function CadastroPage() {
                             <button onClick={() => setIsFreelancer(false)} className={styles.switchButton}>Cadastrar como Cliente</button>
                         </div>
                         <div className={styles.formPanel}>
-                            <FreelancerForm onRegister={handleRegister} />
+                            <FormWizard userType="tecnico" onRegister={handleRegister} />
                         </div>
                     </div>
                 </div>

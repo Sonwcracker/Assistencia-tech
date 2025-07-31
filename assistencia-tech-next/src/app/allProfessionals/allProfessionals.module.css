@@ -1,0 +1,19 @@
+/* Conteúdo para src/app/allProfessionals/allProfessionals.module.css */
+
+.container {
+    /* Define o padding superior/inferior como 2rem e o lateral como 15% */
+    padding: 2rem 15%;
+    width: 100%;
+    box-sizing: border-box; /* Garante que o padding não aumente a largura total */
+}
+
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 2rem;
+}
